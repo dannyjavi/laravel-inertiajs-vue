@@ -4,5 +4,6 @@ export default function formatDate(date){
         month: '2-digit',
         day: '2-digit'
     }
-    return date.toLocaleDateString('en-US', options)
+    const string = new Date(date)
+    return string.toISOString('es-ES', options)
 };

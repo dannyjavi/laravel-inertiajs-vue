@@ -1,6 +1,6 @@
 <template>
     <div>
-        <Calendar />
+        <Calendar :events='events' />
     </div>
 </template>
 
@@ -9,6 +9,7 @@ import Calendar from '../../components/Calendar'
 
 export default {
     name: 'Books',
+    props:['events'],
     components: {
         Calendar
     }    

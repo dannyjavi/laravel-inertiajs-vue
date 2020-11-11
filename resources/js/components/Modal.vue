@@ -37,11 +37,12 @@
                   class="block text-gray-700 text-sm font-bold mb-2"
                 >Fecha</label>
                 <input
+                  disabled="true"
                   type="text"
                   class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
                   id="exampleFormControlInput1"
                   placeholder="Enter pass"
-                  :value="startTime"
+                  :value="start"
                 />
               </div>
               <div class="mb-4">
@@ -50,12 +51,31 @@
                   class="block text-gray-700 text-sm font-bold mb-2"
                 >Hora</label>
                 <input
+                  disabled="true"
                   type="time"
                   class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
                   id="exampleFormControlInput2"
-                  :value="endTime"
+                  :value="hour"
                 />
               </div>
+              <!-- start select -->
+              <div class="col-span-6 sm:col-span-3">
+                <label
+                  for="timeSesion"
+                  class="block text-sm font-medium leading-5 text-gray-700"
+                >Duración</label>
+                <select
+                  v-model="form.session"
+                  id="timeSesion"
+                  class="mt-1 block form-select w-full py-2 px-3 border border-gray-300 bg-white rounded-md shadow-sm focus:outline-none focus:shadow-outline-blue focus:border-blue-300 transition duration-150 ease-in-out sm:text-sm sm:leading-5"
+                >
+                  <option value="1800">Media sesión</option>
+                  <option value="3600">Sesión completa</option>
+                  <option value="900">Vendaje Neuromuscular</option>
+                </select>
+              </div>
+
+              <!-- end select -->
             </div>
           </div>
           <div class="bg-gray-50 px-4 py-3 sm:px-6 sm:flex sm:flex-row-reverse">
@@ -94,15 +114,15 @@
 <script>
 export default {
   name: "Modal",
-  props: ["data", "errors", "startTime","endTime"],
+  props: ["errors", "start", "hour"],
   data() {
     return {
       isOpen: true,
       editMode: false,
       form: {
         title: "work",
-        start: "",
-        end: ""
+        start: this.start + " " + this.hour,
+        session: "1800"
       }
     };
   },
@@ -120,3 +140,5 @@ export default {
 
 <style>
 </style>
+
+

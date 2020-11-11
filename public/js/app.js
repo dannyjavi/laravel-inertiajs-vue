@@ -21232,6 +21232,7 @@ __webpack_require__.r(__webpack_exports__);
 
 /* harmony default export */ __webpack_exports__["default"] = ({
   name: 'Books',
+  props: ['events'],
   components: {
     Calendar: _components_Calendar__WEBPACK_IMPORTED_MODULE_0__["default"]
   }
@@ -22379,7 +22380,8 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _inertiajs_inertia__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! @inertiajs/inertia */ "./node_modules/@inertiajs/inertia/dist/index.js");
 /* harmony import */ var _inertiajs_inertia__WEBPACK_IMPORTED_MODULE_5___default = /*#__PURE__*/__webpack_require__.n(_inertiajs_inertia__WEBPACK_IMPORTED_MODULE_5__);
 /* harmony import */ var _Mixins_transformDates__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(/*! ../Mixins/transformDates */ "./resources/js/Mixins/transformDates.js");
-/* harmony import */ var _Modal__WEBPACK_IMPORTED_MODULE_7__ = __webpack_require__(/*! ./Modal */ "./resources/js/components/Modal.vue");
+/* harmony import */ var _Mixins_transformTime__WEBPACK_IMPORTED_MODULE_7__ = __webpack_require__(/*! ../Mixins/transformTime */ "./resources/js/Mixins/transformTime.js");
+/* harmony import */ var _Modal__WEBPACK_IMPORTED_MODULE_8__ = __webpack_require__(/*! ./Modal */ "./resources/js/components/Modal.vue");
 //
 //
 //
@@ -22392,6 +22394,11 @@ __webpack_require__.r(__webpack_exports__);
 //
 //
 //
+//
+//
+//
+//
+
 
 
 
@@ -22404,13 +22411,14 @@ __webpack_require__.r(__webpack_exports__);
   name: "Calendar",
   components: {
     Fullcalendar: _fullcalendar_vue__WEBPACK_IMPORTED_MODULE_0__["default"],
-    Modal: _Modal__WEBPACK_IMPORTED_MODULE_7__["default"]
+    Modal: _Modal__WEBPACK_IMPORTED_MODULE_8__["default"]
   },
+  props: ['events'],
   data: function data() {
     return {
-      url: '/appointment',
-      dateAppt: '',
-      endTime: '',
+      url: "/appointment",
+      dateAppt: "",
+      endTime: "",
       showModal: false,
       calendarOptions: {
         plugins: [_fullcalendar_daygrid__WEBPACK_IMPORTED_MODULE_1__["default"], _fullcalendar_interaction__WEBPACK_IMPORTED_MODULE_2__["default"], _fullcalendar_timegrid__WEBPACK_IMPORTED_MODULE_3__["default"], _fullcalendar_list__WEBPACK_IMPORTED_MODULE_4__["default"]],
@@ -22422,20 +22430,17 @@ __webpack_require__.r(__webpack_exports__);
         locale: "es",
         initialView: "timeGridWeek",
         dateClick: this.handleDateClick,
-        events: [{
-          title: 'event 1',
-          date: '2020-11-10 07:00:00'
-        }, {
-          title: 'event 2',
-          date: '2020-11-10T08:30:00'
-        }]
+        events: ''
       }
     };
   },
+  created: function created() {
+    this.$data.calendarOptions.events = this.events;
+  },
   methods: {
     handleDateClick: function handleDateClick(arg) {
-      this.dateAppt = Object(_Mixins_transformDates__WEBPACK_IMPORTED_MODULE_6__["default"])(new Date(arg.dateStr));
-      this.endTime = arg.dateStr.substr(11, 8);
+      this.dateAppt = arg.dateStr.substr(0, 10);
+      this.hourAppt = arg.dateStr.substr(11, 8);
       this.showModal = true;
     },
     closeWindow: function closeWindow() {
@@ -22444,15 +22449,31 @@ __webpack_require__.r(__webpack_exports__);
     saveAppt: function saveAppt(formData) {
       var _this = this;
 
-      _inertiajs_inertia__WEBPACK_IMPORTED_MODULE_5__["Inertia"].post(this.url, formData, {
+      var dataAppt = this.setTimeSesion(formData);
+      _inertiajs_inertia__WEBPACK_IMPORTED_MODULE_5__["Inertia"].post(this.url, dataAppt, {
         onSuccess: function onSuccess() {
-          console.warn('cita guardada');
+          _this.showModal = false;
         }
       });
       _inertiajs_inertia__WEBPACK_IMPORTED_MODULE_5__["Inertia"].on('error', function (event) {
         event.preventDefault();
         console.log(_this.$page.error);
       });
+    },
+    setTimeSesion: function setTimeSesion(form) {
+      var timeSesion = parseInt(form.session);
+      var initSesion = new Date(form.start);
+      var getSecondsSesion = initSesion.getSeconds() + timeSesion;
+      initSesion.setSeconds(getSecondsSesion);
+      var time = Object(_Mixins_transformTime__WEBPACK_IMPORTED_MODULE_7__["default"])(initSesion);
+      var objApt = {
+        title: form.title,
+        start: form.start,
+        end: time,
+        session: timeSesion,
+        price: ''
+      };
+      return objApt;
     }
   }
 });
@@ -22561,17 +22582,37 @@ __webpack_require__.r(__webpack_exports__);
 //
 //
 //
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
 /* harmony default export */ __webpack_exports__["default"] = ({
   name: "Modal",
-  props: ["data", "errors", "startTime", "endTime"],
+  props: ["errors", "start", "hour"],
   data: function data() {
     return {
       isOpen: true,
       editMode: false,
       form: {
-        title: "Descansar",
-        start: "",
-        end: ""
+        title: "work",
+        start: this.start + " " + this.hour,
+        session: "1800"
       }
     };
   },
@@ -22676,7 +22717,7 @@ exports = module.exports = __webpack_require__(/*! ../../../node_modules/css-loa
 
 
 // module
-exports.push([module.i, ".fade-enter-active{\n  transition: opacity .5s;\n}\n.fade-leave-active {\n  transition: all .6s ease-out;\n}\n.fade-enter-from, .fade-leave-to {\n  transition: all .8s ease ;\n  transform: translateX(20px);\n  opacity: 0;\n}\n", ""]);
+exports.push([module.i, ".fade-enter-active {\n  transition: opacity 0.5s;\n}\n.fade-leave-active {\n  transition: all 0.6s ease-out;\n}\n.fade-enter-from,\n.fade-leave-to {\n  transition: all 0.8s ease;\n  transform: translateX(20px);\n  opacity: 0;\n}\n", ""]);
 
 // exports
 
@@ -45831,7 +45872,7 @@ var render = function() {
   var _vm = this
   var _h = _vm.$createElement
   var _c = _vm._self._c || _h
-  return _c("div", [_c("Calendar")], 1)
+  return _c("div", [_c("Calendar", { attrs: { events: _vm.events } })], 1)
 }
 var staticRenderFns = []
 render._withStripped = true
@@ -47665,7 +47706,11 @@ var render = function() {
         [
           _vm.showModal
             ? _c("Modal", {
-                attrs: { startTime: _vm.dateAppt, endTime: _vm.endTime },
+                attrs: {
+                  start: _vm.dateAppt,
+                  hour: _vm.hourAppt,
+                  events: _vm.events
+                },
                 on: { closeModal: _vm.closeWindow, save: _vm.saveAppt }
               })
             : _vm._e()
@@ -47802,11 +47847,12 @@ var render = function() {
                               staticClass:
                                 "shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline",
                               attrs: {
+                                disabled: "true",
                                 type: "text",
                                 id: "exampleFormControlInput1",
                                 placeholder: "Enter pass"
                               },
-                              domProps: { value: _vm.startTime }
+                              domProps: { value: _vm.start }
                             })
                           ]),
                           _vm._v(" "),
@@ -47825,12 +47871,81 @@ var render = function() {
                               staticClass:
                                 "shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline",
                               attrs: {
+                                disabled: "true",
                                 type: "time",
                                 id: "exampleFormControlInput2"
                               },
-                              domProps: { value: _vm.endTime }
+                              domProps: { value: _vm.hour }
                             })
-                          ])
+                          ]),
+                          _vm._v(" "),
+                          _c(
+                            "div",
+                            { staticClass: "col-span-6 sm:col-span-3" },
+                            [
+                              _c(
+                                "label",
+                                {
+                                  staticClass:
+                                    "block text-sm font-medium leading-5 text-gray-700",
+                                  attrs: { for: "timeSesion" }
+                                },
+                                [_vm._v("Duración")]
+                              ),
+                              _vm._v(" "),
+                              _c(
+                                "select",
+                                {
+                                  directives: [
+                                    {
+                                      name: "model",
+                                      rawName: "v-model",
+                                      value: _vm.form.session,
+                                      expression: "form.session"
+                                    }
+                                  ],
+                                  staticClass:
+                                    "mt-1 block form-select w-full py-2 px-3 border border-gray-300 bg-white rounded-md shadow-sm focus:outline-none focus:shadow-outline-blue focus:border-blue-300 transition duration-150 ease-in-out sm:text-sm sm:leading-5",
+                                  attrs: { id: "timeSesion" },
+                                  on: {
+                                    change: function($event) {
+                                      var $$selectedVal = Array.prototype.filter
+                                        .call($event.target.options, function(
+                                          o
+                                        ) {
+                                          return o.selected
+                                        })
+                                        .map(function(o) {
+                                          var val =
+                                            "_value" in o ? o._value : o.value
+                                          return val
+                                        })
+                                      _vm.$set(
+                                        _vm.form,
+                                        "session",
+                                        $event.target.multiple
+                                          ? $$selectedVal
+                                          : $$selectedVal[0]
+                                      )
+                                    }
+                                  }
+                                },
+                                [
+                                  _c("option", { attrs: { value: "1800" } }, [
+                                    _vm._v("Media sesión")
+                                  ]),
+                                  _vm._v(" "),
+                                  _c("option", { attrs: { value: "3600" } }, [
+                                    _vm._v("Sesión completa")
+                                  ]),
+                                  _vm._v(" "),
+                                  _c("option", { attrs: { value: "900" } }, [
+                                    _vm._v("Vendaje Neuromuscular")
+                                  ])
+                                ]
+                              )
+                            ]
+                          )
                         ])
                       ]
                     ),
@@ -61674,7 +61789,26 @@ function formatDate(date) {
     month: '2-digit',
     day: '2-digit'
   };
-  return date.toLocaleDateString('en-US', options);
+  var string = new Date(date);
+  return string.toISOString('es-ES', options);
+}
+;
+
+/***/ }),
+
+/***/ "./resources/js/Mixins/transformTime.js":
+/*!**********************************************!*\
+  !*** ./resources/js/Mixins/transformTime.js ***!
+  \**********************************************/
+/*! exports provided: default */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "default", function() { return formatDate; });
+function formatDate(date) {
+  var string = new Date(date);
+  return string.toISOString().replace(/\//g, '-').split('T')[0] + ' ' + string.toLocaleTimeString();
 }
 ;
 

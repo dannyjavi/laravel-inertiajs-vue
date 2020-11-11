@@ -4,10 +4,9 @@ namespace App\Http\Controllers;
 
 use App\Http\Resources\Appointment as AppointmentResources;
 use App\Models\Appointment;
-use Illuminate\Http\Requests;
-use Illuminate\Support\Facades\Validator;
 
 use App\Http\Requests\Appointment as AppointmentRequest;
+use Illuminate\Support\Facades\Auth;
 use Inertia\Inertia;
 
 class AppointmentController extends Controller
@@ -47,8 +46,23 @@ class AppointmentController extends Controller
     public function store(AppointmentRequest $request)
     {
         // Retrieve the validated input data...
-        Appointment::create($request->all());
-
+        if($request->has('session') == 1800){
+            $request->price = 30;
+        }
+        
+        if($request->has('session') == 3600){
+            $request->price = 45;
+        }
+        
+        Appointment::create([
+            'title'=> $request->title,
+            'start' => $request->start,
+            'end' => $request->end,
+            'session' => $request->session,
+            'price' => $request->price,
+            'booked_by' => Auth::id()
+        ]);
+        
         return redirect()->back()->with('message','Cita creada con éxito');
     }
 

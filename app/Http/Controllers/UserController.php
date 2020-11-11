@@ -28,12 +28,7 @@ class UserController extends Controller
      */
     public function store(StoreUserForm $request)
     {
-        $messages = [
-            'unico' => 'El campo :mail no puede repetirse'
-        ];
-  
         User::create($request->all());
-            #Auth::user()->id me da el id del usuario autenticado
         return redirect()
                 ->back()
                 ->with('message', 'Paciente creado!!');

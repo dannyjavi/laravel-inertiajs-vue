@@ -8,7 +8,7 @@ class Appointment extends Model
 {
     use HasFactory;
 
-    protected $fillable = ['title', 'start', 'end'];
+    protected $fillable = ['title', 'start', 'end','session','price','booked_by'];
 
     #Esta configuración es opcional .... 
     /* protected $fillable = ['title','start','end'];
