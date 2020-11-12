@@ -21131,6 +21131,38 @@ __webpack_require__.r(__webpack_exports__);
 //
 //
 //
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
 
 
 
@@ -21162,14 +21194,23 @@ __webpack_require__.r(__webpack_exports__);
       this.editMode = false;
     },
     save: function save(data) {
+      var _this = this;
+
       _inertiajs_inertia__WEBPACK_IMPORTED_MODULE_2__["Inertia"].post(this.url, this.form, {
-        onSuccess: function onSuccess() {}
+        onSuccess: function onSuccess(page) {
+          if (Object.entries(page.props.errors).length === 0) {
+            _this.isOpen = false;
+
+            _this.reset();
+          }
+        }
       });
       _inertiajs_inertia__WEBPACK_IMPORTED_MODULE_2__["Inertia"].on("error", function (event) {
+        console.log("tenemos errores: ", event.detail.error);
         event.preventDefault(); // Handle the error yourself
       });
     },
-    resetForm: function resetForm() {
+    reset: function reset() {
       this.form = {
         name: null,
         email: null
@@ -21186,7 +21227,7 @@ __webpack_require__.r(__webpack_exports__);
       this.openModal();
     },
     update: function update(data) {
-      var _this = this;
+      var _this2 = this;
 
       /* data._method = "PUT"
       this.$inertia.post("/users/" + data.id, data)
@@ -21195,9 +21236,9 @@ __webpack_require__.r(__webpack_exports__);
       data._method = "PUT";
       _inertiajs_inertia__WEBPACK_IMPORTED_MODULE_2__["Inertia"].post(this.url + "/".concat(data.id), data, {
         onFinish: function onFinish() {
-          _this.reset();
+          _this2.reset();
 
-          _this.isOpen = false;
+          _this2.isOpen = false;
         }
       });
     },
@@ -22398,6 +22439,8 @@ __webpack_require__.r(__webpack_exports__);
 //
 //
 //
+//
+//
 
 
 
@@ -22413,11 +22456,14 @@ __webpack_require__.r(__webpack_exports__);
     Fullcalendar: _fullcalendar_vue__WEBPACK_IMPORTED_MODULE_0__["default"],
     Modal: _Modal__WEBPACK_IMPORTED_MODULE_8__["default"]
   },
-  props: ['events'],
+  props: ["events"],
   data: function data() {
     return {
       url: "/appointment",
       dateAppt: "",
+      hourAppt: "",
+      title: "",
+      timeSesion: "",
       endTime: "",
       showModal: false,
       calendarOptions: {
@@ -22429,15 +22475,19 @@ __webpack_require__.r(__webpack_exports__);
         },
         locale: "es",
         initialView: "timeGridWeek",
+        events: "",
         dateClick: this.handleDateClick,
-        events: ''
+        eventClick: this.handleEventClick
       }
     };
   },
   created: function created() {
-    this.$data.calendarOptions.events = this.events;
+    this.getEvents();
   },
   methods: {
+    getEvents: function getEvents() {
+      this.$data.calendarOptions.events = this.events;
+    },
     handleDateClick: function handleDateClick(arg) {
       this.dateAppt = arg.dateStr.substr(0, 10);
       this.hourAppt = arg.dateStr.substr(11, 8);
@@ -22451,14 +22501,22 @@ __webpack_require__.r(__webpack_exports__);
 
       var dataAppt = this.setTimeSesion(formData);
       _inertiajs_inertia__WEBPACK_IMPORTED_MODULE_5__["Inertia"].post(this.url, dataAppt, {
-        onSuccess: function onSuccess() {
-          _this.showModal = false;
+        onSuccess: function onSuccess(page) {
+          if (Object.entries(page.props.errors).length === 0) {
+            _this.showModal = false;
+          }
+
+          _this.getEvents();
         }
       });
-      _inertiajs_inertia__WEBPACK_IMPORTED_MODULE_5__["Inertia"].on('error', function (event) {
+      _inertiajs_inertia__WEBPACK_IMPORTED_MODULE_5__["Inertia"].on("error", function (event) {
         event.preventDefault();
-        console.log(_this.$page.error);
+        console.log(event.detail.error);
       });
+    },
+    handleEventClick: function handleEventClick(clickInfo) {
+      this.showModal = true;
+      this.loadModal(clickInfo);
     },
     setTimeSesion: function setTimeSesion(form) {
       var timeSesion = parseInt(form.session);
@@ -22471,9 +22529,15 @@ __webpack_require__.r(__webpack_exports__);
         start: form.start,
         end: time,
         session: timeSesion,
-        price: ''
+        price: ""
       };
       return objApt;
+    },
+    loadModal: function loadModal(obj) {
+      this.title = obj.event.title;
+      this.dateAppt = obj.event.startStr.substr(0, 10);
+      this.hourAppt = obj.event.startStr.substr(11, 8);
+      this.timeSesion = obj.event.extendedProps.session;
     }
   }
 });
@@ -22604,17 +22668,22 @@ __webpack_require__.r(__webpack_exports__);
 //
 /* harmony default export */ __webpack_exports__["default"] = ({
   name: "Modal",
-  props: ["errors", "start", "hour"],
+  props: ["errors", "start", "hour", "title", "session"],
   data: function data() {
     return {
       isOpen: true,
       editMode: false,
       form: {
-        title: "work",
+        title: this.title,
         start: this.start + " " + this.hour,
-        session: "1800"
+        session: this.time
       }
     };
+  },
+  computed: {
+    time: function time() {
+      return this.session !== '' ? this.form.session = this.session : "1800";
+    }
   },
   methods: {
     closeModal: function closeModal() {
@@ -22699,25 +22768,6 @@ exports = module.exports = __webpack_require__(/*! ../../css-loader/lib/css-base
 
 // module
 exports.push([module.i, "/*\nA VERTICAL event\n*/\n\n.fc-v-event { /* allowed to be top-level */\n  display: block;\n  border: 1px solid #3788d8;\n  border: 1px solid var(--fc-event-border-color, #3788d8);\n  background-color: #3788d8;\n  background-color: var(--fc-event-bg-color, #3788d8)\n}\n\n.fc-v-event .fc-event-main {\n  color: #fff;\n  color: var(--fc-event-text-color, #fff);\n  height: 100%;\n}\n\n.fc-v-event .fc-event-main-frame {\n  height: 100%;\n  display: flex;\n  flex-direction: column;\n}\n\n.fc-v-event .fc-event-time {\n  flex-grow: 0;\n  flex-shrink: 0;\n  max-height: 100%;\n  overflow: hidden;\n}\n\n.fc-v-event .fc-event-title-container { /* a container for the sticky cushion */\n  flex-grow: 1;\n  flex-shrink: 1;\n  min-height: 0; /* important for allowing to shrink all the way */\n}\n\n.fc-v-event .fc-event-title { /* will have fc-sticky on it */\n  top: 0;\n  bottom: 0;\n  max-height: 100%; /* clip overflow */\n  overflow: hidden;\n}\n\n.fc-v-event:not(.fc-event-start) {\n  border-top-width: 0;\n  border-top-left-radius: 0;\n  border-top-right-radius: 0;\n}\n\n.fc-v-event:not(.fc-event-end) {\n  border-bottom-width: 0;\n  border-bottom-left-radius: 0;\n  border-bottom-right-radius: 0;\n}\n\n.fc-v-event.fc-event-selected:before {\n  /* expand hit area */\n  left: -10px;\n  right: -10px;\n}\n\n.fc-v-event {\n  /* resizer (mouse AND touch) */\n}\n\n.fc-v-event .fc-event-resizer-start {\n  cursor: n-resize;\n}\n\n.fc-v-event .fc-event-resizer-end {\n  cursor: s-resize;\n}\n\n.fc-v-event {\n  /* resizer for MOUSE */\n}\n\n.fc-v-event:not(.fc-event-selected) .fc-event-resizer {\n  height: 8px;\n  height: var(--fc-event-resizer-thickness, 8px);\n  left: 0;\n  right: 0;\n}\n\n.fc-v-event:not(.fc-event-selected) .fc-event-resizer-start {\n  top: -4px;\n  top: calc(var(--fc-event-resizer-thickness, 8px) / -2);\n}\n\n.fc-v-event:not(.fc-event-selected) .fc-event-resizer-end {\n  bottom: -4px;\n  bottom: calc(var(--fc-event-resizer-thickness, 8px) / -2);\n}\n\n.fc-v-event {\n  /* resizer for TOUCH (when event is \"selected\") */\n}\n\n.fc-v-event.fc-event-selected .fc-event-resizer {\n  left: 50%;\n  margin-left: -4px;\n  margin-left: calc(var(--fc-event-resizer-dot-total-width, 8px) / -2);\n}\n\n.fc-v-event.fc-event-selected .fc-event-resizer-start {\n  top: -4px;\n  top: calc(var(--fc-event-resizer-dot-total-width, 8px) / -2);\n}\n\n.fc-v-event.fc-event-selected .fc-event-resizer-end {\n  bottom: -4px;\n  bottom: calc(var(--fc-event-resizer-dot-total-width, 8px) / -2);\n}\n\n.fc .fc-timegrid .fc-daygrid-body { /* the all-day daygrid within the timegrid view */\n  z-index: 2; /* put above the timegrid-body so that more-popover is above everything. TODO: better solution */\n}\n\n.fc .fc-timegrid-divider {\n  padding: 0 0 2px; /* browsers get confused when you set height. use padding instead */\n}\n\n.fc .fc-timegrid-body {\n  position: relative;\n  z-index: 1; /* scope the z-indexes of slots and cols */\n  min-height: 100%; /* fill height always, even when slat table doesn't grow */\n}\n\n.fc .fc-timegrid-axis-chunk { /* for advanced ScrollGrid */\n  position: relative /* offset parent for now-indicator-container */\n}\n\n.fc .fc-timegrid-axis-chunk > table {\n  position: relative;\n  z-index: 1; /* above the now-indicator-container */\n}\n\n.fc .fc-timegrid-slots {\n  position: relative;\n  z-index: 1;\n}\n\n.fc .fc-timegrid-slot { /* a <td> */\n  height: 1.5em;\n  border-bottom: 0 /* each cell owns its top border */\n}\n\n.fc .fc-timegrid-slot:empty:before {\n  content: '\\A0'; /* make sure there's at least an empty space to create height for height syncing */\n}\n\n.fc .fc-timegrid-slot-minor {\n  border-top-style: dotted;\n}\n\n.fc .fc-timegrid-slot-label-cushion {\n  display: inline-block;\n  white-space: nowrap;\n}\n\n.fc .fc-timegrid-slot-label {\n  vertical-align: middle; /* vertical align the slots */\n}\n\n.fc {\n  /* slots AND axis cells (top-left corner of view including the \"all-day\" text) */\n}\n\n.fc .fc-timegrid-axis-cushion,\n  .fc .fc-timegrid-slot-label-cushion {\n  padding: 0 4px;\n}\n\n.fc {\n  /* axis cells (top-left corner of view including the \"all-day\" text) */\n  /* vertical align is more complicated, uses flexbox */\n}\n\n.fc .fc-timegrid-axis-frame-liquid {\n  height: 100%; /* will need liquid-hack in FF */\n}\n\n.fc .fc-timegrid-axis-frame {\n  overflow: hidden;\n  display: flex;\n  align-items: center; /* vertical align */\n  justify-content: flex-end; /* horizontal align. matches text-align below */\n}\n\n.fc .fc-timegrid-axis-cushion {\n  max-width: 60px; /* limits the width of the \"all-day\" text */\n  flex-shrink: 0; /* allows text to expand how it normally would, regardless of constrained width */\n}\n\n.fc-direction-ltr .fc-timegrid-slot-label-frame {\n  text-align: right;\n}\n\n.fc-direction-rtl .fc-timegrid-slot-label-frame {\n  text-align: left;\n}\n\n.fc-liquid-hack .fc-timegrid-axis-frame-liquid {\n  height: auto;\n  position: absolute;\n  top: 0;\n  right: 0;\n  bottom: 0;\n  left: 0;\n}\n\n.fc .fc-timegrid-col.fc-day-today {\n  background-color: rgba(255, 220, 40, 0.15);\n  background-color: var(--fc-today-bg-color, rgba(255, 220, 40, 0.15));\n}\n\n.fc .fc-timegrid-col-frame {\n  min-height: 100%; /* liquid-hack is below */\n  position: relative;\n}\n\n.fc-liquid-hack .fc-timegrid-col-frame {\n  height: auto;\n  position: absolute;\n  top: 0;\n  right: 0;\n  bottom: 0;\n  left: 0;\n}\n\n.fc-media-screen .fc-timegrid-cols {\n  position: absolute; /* no z-index. children will decide and go above slots */\n  top: 0;\n  left: 0;\n  right: 0;\n  bottom: 0\n}\n\n.fc-media-screen .fc-timegrid-cols > table {\n  height: 100%;\n}\n\n.fc-media-screen .fc-timegrid-col-bg,\n  .fc-media-screen .fc-timegrid-col-events,\n  .fc-media-screen .fc-timegrid-now-indicator-container {\n  position: absolute;\n  top: 0;\n  left: 0;\n  right: 0;\n}\n\n.fc-media-screen .fc-timegrid-event-harness {\n  position: absolute; /* top/left/right/bottom will all be set by JS */\n}\n\n.fc {\n  /* bg */\n}\n\n.fc .fc-timegrid-col-bg {\n  z-index: 2; /* TODO: kill */\n}\n\n.fc .fc-timegrid-col-bg .fc-non-business { z-index: 1\n}\n\n.fc .fc-timegrid-col-bg .fc-bg-event { z-index: 2\n}\n\n.fc .fc-timegrid-col-bg .fc-highlight { z-index: 3\n}\n\n.fc .fc-timegrid-bg-harness {\n  position: absolute; /* top/bottom will be set by JS */\n  left: 0;\n  right: 0;\n}\n\n.fc {\n  /* fg events */\n  /* (the mirror segs are put into a separate container with same classname, */\n  /* and they must be after the normal seg container to appear at a higher z-index) */\n}\n\n.fc .fc-timegrid-col-events {\n  z-index: 3;\n  /* child event segs have z-indexes that are scoped within this div */\n}\n\n.fc {\n  /* now indicator */\n}\n\n.fc .fc-timegrid-now-indicator-container {\n  bottom: 0;\n  overflow: hidden; /* don't let overflow of lines/arrows cause unnecessary scrolling */\n  /* z-index is set on the individual elements */\n}\n\n.fc-direction-ltr .fc-timegrid-col-events {\n  margin: 0 2.5% 0 2px;\n}\n\n.fc-direction-rtl .fc-timegrid-col-events {\n  margin: 0 2px 0 2.5%;\n}\n\n.fc-timegrid-event-harness-inset .fc-timegrid-event,\n.fc-timegrid-event.fc-event-mirror {\n  box-shadow: 0px 0px 0px 1px #fff;\n  box-shadow: 0px 0px 0px 1px var(--fc-page-bg-color, #fff);\n}\n\n.fc-timegrid-event { /* events need to be root */\n  font-size: .85em;\n  font-size: var(--fc-small-font-size, .85em);\n  border-radius: 3px\n}\n\n.fc-timegrid-event .fc-event-main {\n  padding: 1px 1px 0;\n}\n\n.fc-timegrid-event .fc-event-time {\n  white-space: nowrap;\n  font-size: .85em;\n  font-size: var(--fc-small-font-size, .85em);\n  margin-bottom: 1px;\n}\n\n.fc-timegrid-event-condensed .fc-event-main-frame {\n  flex-direction: row;\n  overflow: hidden;\n}\n\n.fc-timegrid-event-condensed .fc-event-time:after {\n  content: '\\A0-\\A0'; /* dash surrounded by non-breaking spaces */\n}\n\n.fc-timegrid-event-condensed .fc-event-title {\n  font-size: .85em;\n  font-size: var(--fc-small-font-size, .85em)\n}\n\n.fc-media-screen .fc-timegrid-event {\n  position: absolute; /* absolute WITHIN the harness */\n  top: 0;\n  bottom: 1px; /* stay away from bottom slot line */\n  left: 0;\n  right: 0;\n}\n\n.fc {\n  /* line */\n}\n\n.fc .fc-timegrid-now-indicator-line {\n  position: absolute;\n  z-index: 4;\n  left: 0;\n  right: 0;\n  border-style: solid;\n  border-color: red;\n  border-color: var(--fc-now-indicator-color, red);\n  border-width: 1px 0 0;\n}\n\n.fc {\n  /* arrow */\n}\n\n.fc .fc-timegrid-now-indicator-arrow {\n  position: absolute;\n  z-index: 4;\n  margin-top: -5px; /* vertically center on top coordinate */\n  border-style: solid;\n  border-color: red;\n  border-color: var(--fc-now-indicator-color, red);\n}\n\n.fc-direction-ltr .fc-timegrid-now-indicator-arrow {\n  left: 0;\n  /* triangle pointing right. TODO: mixin */\n  border-width: 5px 0 5px 6px;\n  border-top-color: transparent;\n  border-bottom-color: transparent;\n}\n\n.fc-direction-rtl .fc-timegrid-now-indicator-arrow {\n  right: 0;\n  /* triangle pointing left. TODO: mixin */\n  border-width: 5px 6px 5px 0;\n  border-top-color: transparent;\n  border-bottom-color: transparent;\n}\n", ""]);
-
-// exports
-
-
-/***/ }),
-
-/***/ "./node_modules/css-loader/index.js?!./node_modules/vue-loader/lib/loaders/stylePostLoader.js!./node_modules/postcss-loader/src/index.js?!./node_modules/vue-loader/lib/index.js?!./resources/js/components/Calendar.vue?vue&type=style&index=0&lang=css&":
-/*!**************************************************************************************************************************************************************************************************************************************************************************!*\
-  !*** ./node_modules/css-loader??ref--6-1!./node_modules/vue-loader/lib/loaders/stylePostLoader.js!./node_modules/postcss-loader/src??ref--6-2!./node_modules/vue-loader/lib??vue-loader-options!./resources/js/components/Calendar.vue?vue&type=style&index=0&lang=css& ***!
-  \**************************************************************************************************************************************************************************************************************************************************************************/
-/*! no static exports found */
-/***/ (function(module, exports, __webpack_require__) {
-
-exports = module.exports = __webpack_require__(/*! ../../../node_modules/css-loader/lib/css-base.js */ "./node_modules/css-loader/lib/css-base.js")(false);
-// imports
-
-
-// module
-exports.push([module.i, ".fade-enter-active {\n  transition: opacity 0.5s;\n}\n.fade-leave-active {\n  transition: all 0.6s ease-out;\n}\n.fade-enter-from,\n.fade-leave-to {\n  transition: all 0.8s ease;\n  transform: translateX(20px);\n  opacity: 0;\n}\n", ""]);
 
 // exports
 
@@ -41550,36 +41600,6 @@ process.umask = function() { return 0; };
 
 /***/ }),
 
-/***/ "./node_modules/style-loader/index.js!./node_modules/css-loader/index.js?!./node_modules/vue-loader/lib/loaders/stylePostLoader.js!./node_modules/postcss-loader/src/index.js?!./node_modules/vue-loader/lib/index.js?!./resources/js/components/Calendar.vue?vue&type=style&index=0&lang=css&":
-/*!******************************************************************************************************************************************************************************************************************************************************************************************************!*\
-  !*** ./node_modules/style-loader!./node_modules/css-loader??ref--6-1!./node_modules/vue-loader/lib/loaders/stylePostLoader.js!./node_modules/postcss-loader/src??ref--6-2!./node_modules/vue-loader/lib??vue-loader-options!./resources/js/components/Calendar.vue?vue&type=style&index=0&lang=css& ***!
-  \******************************************************************************************************************************************************************************************************************************************************************************************************/
-/*! no static exports found */
-/***/ (function(module, exports, __webpack_require__) {
-
-
-var content = __webpack_require__(/*! !../../../node_modules/css-loader??ref--6-1!../../../node_modules/vue-loader/lib/loaders/stylePostLoader.js!../../../node_modules/postcss-loader/src??ref--6-2!../../../node_modules/vue-loader/lib??vue-loader-options!./Calendar.vue?vue&type=style&index=0&lang=css& */ "./node_modules/css-loader/index.js?!./node_modules/vue-loader/lib/loaders/stylePostLoader.js!./node_modules/postcss-loader/src/index.js?!./node_modules/vue-loader/lib/index.js?!./resources/js/components/Calendar.vue?vue&type=style&index=0&lang=css&");
-
-if(typeof content === 'string') content = [[module.i, content, '']];
-
-var transform;
-var insertInto;
-
-
-
-var options = {"hmr":true}
-
-options.transform = transform
-options.insertInto = undefined;
-
-var update = __webpack_require__(/*! ../../../node_modules/style-loader/lib/addStyles.js */ "./node_modules/style-loader/lib/addStyles.js")(content, options);
-
-if(content.locals) module.exports = content.locals;
-
-if(false) {}
-
-/***/ }),
-
 /***/ "./node_modules/style-loader/lib/addStyles.js":
 /*!****************************************************!*\
   !*** ./node_modules/style-loader/lib/addStyles.js ***!
@@ -45381,7 +45401,7 @@ var render = function() {
                   staticClass:
                     "font-semibold text-xl text-gray-800 leading-tight"
                 },
-                [_vm._v("Manage Users")]
+                [_vm._v("\n      Manage Users\n    ")]
               )
             ]
           },
@@ -45431,7 +45451,7 @@ var render = function() {
                     }
                   }
                 },
-                [_vm._v("Create New Post")]
+                [_vm._v("\n          Create New Post\n        ")]
               ),
               _vm._v(" "),
               _c("table", { staticClass: "table-fixed w-full" }, [
@@ -45477,7 +45497,7 @@ var render = function() {
                               }
                             }
                           },
-                          [_vm._v("Edit")]
+                          [_vm._v("\n                  Edit\n                ")]
                         ),
                         _vm._v(" "),
                         _c(
@@ -45491,7 +45511,11 @@ var render = function() {
                               }
                             }
                           },
-                          [_vm._v("Delete")]
+                          [
+                            _vm._v(
+                              "\n                  Delete\n                "
+                            )
+                          ]
                         )
                       ])
                     ])
@@ -45500,350 +45524,375 @@ var render = function() {
                 )
               ]),
               _vm._v(" "),
-              _vm.isOpen
-                ? _c(
-                    "div",
-                    {
-                      staticClass:
-                        "fixed z-10 inset-0 overflow-y-auto ease-out duration-400"
-                    },
-                    [
-                      _c(
-                        "div",
-                        {
-                          staticClass:
-                            "flex items-end justify-center min-h-screen pt-4 px-4 pb-20 text-center sm:block sm:p-0"
-                        },
-                        [
-                          _c(
-                            "div",
-                            { staticClass: "fixed inset-0 transition-opacity" },
-                            [
-                              _c("div", {
-                                staticClass:
-                                  "absolute inset-0 bg-gray-500 opacity-75"
-                              })
-                            ]
-                          ),
-                          _vm._v(" "),
-                          _c("span", {
+              _c("transition", { attrs: { name: "fade" } }, [
+                _vm.isOpen
+                  ? _c(
+                      "div",
+                      {
+                        staticClass:
+                          "fixed z-10 inset-0 overflow-y-auto ease-out duration-400"
+                      },
+                      [
+                        _c(
+                          "div",
+                          {
                             staticClass:
-                              "hidden sm:inline-block sm:align-middle sm:h-screen"
-                          }),
-                          _vm._v("​\n            "),
-                          _c(
-                            "div",
-                            {
+                              "flex items-end justify-center min-h-screen pt-4 px-4 pb-20 text-center sm:block sm:p-0"
+                          },
+                          [
+                            _c(
+                              "div",
+                              {
+                                staticClass: "fixed inset-0 transition-opacity"
+                              },
+                              [
+                                _c("div", {
+                                  staticClass:
+                                    "absolute inset-0 bg-gray-500 opacity-75"
+                                })
+                              ]
+                            ),
+                            _vm._v(" "),
+                            _c("span", {
                               staticClass:
-                                "inline-block align-bottom bg-white rounded-lg text-left overflow-hidden shadow-xl transform transition-all sm:my-8 sm:align-middle sm:max-w-lg sm:w-full",
-                              attrs: {
-                                role: "dialog",
-                                "aria-modal": "true",
-                                "aria-labelledby": "modal-headline"
-                              }
-                            },
-                            [
-                              _c("form", [
-                                _c(
-                                  "div",
-                                  {
-                                    staticClass:
-                                      "bg-white px-4 pt-5 pb-4 sm:p-6 sm:pb-4"
-                                  },
-                                  [
-                                    _c("div", {}, [
-                                      _c("div", { staticClass: "mb-4" }, [
-                                        _c(
-                                          "label",
-                                          {
-                                            staticClass:
-                                              "block text-gray-700 text-sm font-bold mb-2",
-                                            attrs: {
-                                              for: "exampleFormControlInput1"
-                                            }
-                                          },
-                                          [_vm._v("Nombre:")]
-                                        ),
-                                        _vm._v(" "),
-                                        _c("input", {
-                                          directives: [
+                                "hidden sm:inline-block sm:align-middle sm:h-screen"
+                            }),
+                            _vm._v("​\n            "),
+                            _c(
+                              "div",
+                              {
+                                staticClass:
+                                  "inline-block align-bottom bg-white rounded-lg text-left overflow-hidden shadow-xl transform transition-all sm:my-8 sm:align-middle sm:max-w-lg sm:w-full",
+                                attrs: {
+                                  role: "dialog",
+                                  "aria-modal": "true",
+                                  "aria-labelledby": "modal-headline"
+                                }
+                              },
+                              [
+                                _c("form", [
+                                  _c(
+                                    "div",
+                                    {
+                                      staticClass:
+                                        "bg-white px-4 pt-5 pb-4 sm:p-6 sm:pb-4"
+                                    },
+                                    [
+                                      _c("div", {}, [
+                                        _c("div", { staticClass: "mb-4" }, [
+                                          _c(
+                                            "label",
                                             {
-                                              name: "model",
-                                              rawName: "v-model",
-                                              value: _vm.form.name,
-                                              expression: "form.name"
-                                            }
-                                          ],
-                                          staticClass:
-                                            "shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline",
-                                          attrs: {
-                                            type: "text",
-                                            id: "exampleFormControlInput1",
-                                            placeholder: "Ingresa el nombre"
-                                          },
-                                          domProps: { value: _vm.form.name },
-                                          on: {
-                                            input: function($event) {
-                                              if ($event.target.composing) {
-                                                return
+                                              staticClass:
+                                                "block text-gray-700 text-sm font-bold mb-2",
+                                              attrs: {
+                                                for: "exampleFormControlInput1"
                                               }
-                                              _vm.$set(
-                                                _vm.form,
-                                                "name",
-                                                $event.target.value
-                                              )
-                                            }
-                                          }
-                                        }),
-                                        _vm._v(" "),
-                                        _vm.$page.errors.name
-                                          ? _c(
-                                              "div",
-                                              { staticClass: "text-red-500" },
-                                              [
-                                                _vm._v(
-                                                  _vm._s(
-                                                    _vm.$page.errors.name[0]
-                                                  )
-                                                )
-                                              ]
-                                            )
-                                          : _vm._e()
-                                      ]),
-                                      _vm._v(" "),
-                                      _c("div", { staticClass: "mb-4" }, [
-                                        _c(
-                                          "label",
-                                          {
+                                            },
+                                            [_vm._v("Nombre:")]
+                                          ),
+                                          _vm._v(" "),
+                                          _c("input", {
+                                            directives: [
+                                              {
+                                                name: "model",
+                                                rawName: "v-model",
+                                                value: _vm.form.name,
+                                                expression: "form.name"
+                                              }
+                                            ],
                                             staticClass:
-                                              "block text-gray-700 text-sm font-bold mb-2",
+                                              "shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline",
                                             attrs: {
-                                              for: "exampleFormControlInput1"
-                                            }
-                                          },
-                                          [_vm._v("Password:")]
-                                        ),
-                                        _vm._v(" "),
-                                        _c("input", {
-                                          directives: [
-                                            {
-                                              name: "model",
-                                              rawName: "v-model",
-                                              value: _vm.form.password,
-                                              expression: "form.password"
-                                            }
-                                          ],
-                                          staticClass:
-                                            "shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline",
-                                          attrs: {
-                                            type: "text",
-                                            id: "exampleFormControlInput1",
-                                            placeholder: "Enter pass"
-                                          },
-                                          domProps: {
-                                            value: _vm.form.password
-                                          },
-                                          on: {
-                                            input: function($event) {
-                                              if ($event.target.composing) {
-                                                return
-                                              }
-                                              _vm.$set(
-                                                _vm.form,
-                                                "password",
-                                                $event.target.value
-                                              )
-                                            }
-                                          }
-                                        }),
-                                        _vm._v(" "),
-                                        _vm.$page.errors.password
-                                          ? _c(
-                                              "div",
-                                              { staticClass: "text-red-500" },
-                                              [
-                                                _vm._v(
-                                                  _vm._s(
-                                                    _vm.$page.errors.password[0]
-                                                  )
+                                              type: "text",
+                                              id: "exampleFormControlInput1",
+                                              placeholder: "Ingresa el nombre"
+                                            },
+                                            domProps: { value: _vm.form.name },
+                                            on: {
+                                              input: function($event) {
+                                                if ($event.target.composing) {
+                                                  return
+                                                }
+                                                _vm.$set(
+                                                  _vm.form,
+                                                  "name",
+                                                  $event.target.value
                                                 )
-                                              ]
-                                            )
-                                          : _vm._e()
-                                      ]),
-                                      _vm._v(" "),
-                                      _c("div", { staticClass: "mb-4" }, [
-                                        _c(
-                                          "label",
-                                          {
+                                              }
+                                            }
+                                          }),
+                                          _vm._v(" "),
+                                          _vm.$page.errors.name
+                                            ? _c(
+                                                "div",
+                                                { staticClass: "text-red-500" },
+                                                [
+                                                  _vm._v(
+                                                    "\n                        " +
+                                                      _vm._s(
+                                                        _vm.$page.errors.name[0]
+                                                      ) +
+                                                      "\n                      "
+                                                  )
+                                                ]
+                                              )
+                                            : _vm._e()
+                                        ]),
+                                        _vm._v(" "),
+                                        _c("div", { staticClass: "mb-4" }, [
+                                          _c(
+                                            "label",
+                                            {
+                                              staticClass:
+                                                "block text-gray-700 text-sm font-bold mb-2",
+                                              attrs: {
+                                                for: "exampleFormControlInput1"
+                                              }
+                                            },
+                                            [_vm._v("Password:")]
+                                          ),
+                                          _vm._v(" "),
+                                          _c("input", {
+                                            directives: [
+                                              {
+                                                name: "model",
+                                                rawName: "v-model",
+                                                value: _vm.form.password,
+                                                expression: "form.password"
+                                              }
+                                            ],
                                             staticClass:
-                                              "block text-gray-700 text-sm font-bold mb-2",
+                                              "shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline",
                                             attrs: {
-                                              for: "exampleFormControlInput2"
-                                            }
-                                          },
-                                          [_vm._v("Email:")]
-                                        ),
-                                        _vm._v(" "),
-                                        _c("input", {
-                                          directives: [
-                                            {
-                                              name: "model",
-                                              rawName: "v-model",
-                                              value: _vm.form.email,
-                                              expression: "form.email"
-                                            }
-                                          ],
-                                          staticClass:
-                                            "shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline",
-                                          attrs: {
-                                            id: "exampleFormControlInput2",
-                                            placeholder: "Correo electrónico"
-                                          },
-                                          domProps: { value: _vm.form.email },
-                                          on: {
-                                            input: function($event) {
-                                              if ($event.target.composing) {
-                                                return
-                                              }
-                                              _vm.$set(
-                                                _vm.form,
-                                                "email",
-                                                $event.target.value
-                                              )
-                                            }
-                                          }
-                                        }),
-                                        _vm._v(" "),
-                                        _vm.$page.errors.email
-                                          ? _c(
-                                              "div",
-                                              { staticClass: "text-red-500" },
-                                              [
-                                                _vm._v(
-                                                  _vm._s(
-                                                    _vm.$page.errors.email[0]
-                                                  )
+                                              type: "text",
+                                              id: "exampleFormControlInput1",
+                                              placeholder: "Enter pass"
+                                            },
+                                            domProps: {
+                                              value: _vm.form.password
+                                            },
+                                            on: {
+                                              input: function($event) {
+                                                if ($event.target.composing) {
+                                                  return
+                                                }
+                                                _vm.$set(
+                                                  _vm.form,
+                                                  "password",
+                                                  $event.target.value
                                                 )
-                                              ]
-                                            )
-                                          : _vm._e()
+                                              }
+                                            }
+                                          }),
+                                          _vm._v(" "),
+                                          _vm.$page.errors.password
+                                            ? _c(
+                                                "div",
+                                                { staticClass: "text-red-500" },
+                                                [
+                                                  _vm._v(
+                                                    "\n                        " +
+                                                      _vm._s(
+                                                        _vm.$page.errors
+                                                          .password[0]
+                                                      ) +
+                                                      "\n                      "
+                                                  )
+                                                ]
+                                              )
+                                            : _vm._e()
+                                        ]),
+                                        _vm._v(" "),
+                                        _c("div", { staticClass: "mb-4" }, [
+                                          _c(
+                                            "label",
+                                            {
+                                              staticClass:
+                                                "block text-gray-700 text-sm font-bold mb-2",
+                                              attrs: {
+                                                for: "exampleFormControlInput2"
+                                              }
+                                            },
+                                            [_vm._v("Email:")]
+                                          ),
+                                          _vm._v(" "),
+                                          _c("input", {
+                                            directives: [
+                                              {
+                                                name: "model",
+                                                rawName: "v-model",
+                                                value: _vm.form.email,
+                                                expression: "form.email"
+                                              }
+                                            ],
+                                            staticClass:
+                                              "shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline",
+                                            attrs: {
+                                              id: "exampleFormControlInput2",
+                                              placeholder: "Correo electrónico"
+                                            },
+                                            domProps: { value: _vm.form.email },
+                                            on: {
+                                              input: function($event) {
+                                                if ($event.target.composing) {
+                                                  return
+                                                }
+                                                _vm.$set(
+                                                  _vm.form,
+                                                  "email",
+                                                  $event.target.value
+                                                )
+                                              }
+                                            }
+                                          }),
+                                          _vm._v(" "),
+                                          _vm.$page.errors.email
+                                            ? _c(
+                                                "div",
+                                                { staticClass: "text-red-500" },
+                                                [
+                                                  _vm._v(
+                                                    "\n                        " +
+                                                      _vm._s(
+                                                        _vm.$page.errors
+                                                          .email[0]
+                                                      ) +
+                                                      "\n                      "
+                                                  )
+                                                ]
+                                              )
+                                            : _vm._e()
+                                        ])
                                       ])
-                                    ])
-                                  ]
-                                ),
-                                _vm._v(" "),
-                                _c(
-                                  "div",
-                                  {
-                                    staticClass:
-                                      "bg-gray-50 px-4 py-3 sm:px-6 sm:flex sm:flex-row-reverse"
-                                  },
-                                  [
-                                    _c(
-                                      "span",
-                                      {
-                                        staticClass:
-                                          "flex w-full rounded-md shadow-sm sm:ml-3 sm:w-auto"
-                                      },
-                                      [
-                                        _c(
-                                          "button",
-                                          {
-                                            directives: [
-                                              {
-                                                name: "show",
-                                                rawName: "v-show",
-                                                value: !_vm.editMode,
-                                                expression: "!editMode"
+                                    ]
+                                  ),
+                                  _vm._v(" "),
+                                  _c(
+                                    "div",
+                                    {
+                                      staticClass:
+                                        "bg-gray-50 px-4 py-3 sm:px-6 sm:flex sm:flex-row-reverse"
+                                    },
+                                    [
+                                      _c(
+                                        "span",
+                                        {
+                                          staticClass:
+                                            "flex w-full rounded-md shadow-sm sm:ml-3 sm:w-auto"
+                                        },
+                                        [
+                                          _c(
+                                            "button",
+                                            {
+                                              directives: [
+                                                {
+                                                  name: "show",
+                                                  rawName: "v-show",
+                                                  value: !_vm.editMode,
+                                                  expression: "!editMode"
+                                                }
+                                              ],
+                                              staticClass:
+                                                "inline-flex justify-center w-full rounded-md border border-transparent px-4 py-2 bg-green-600 text-base leading-6 font-medium text-white shadow-sm hover:bg-green-500 focus:outline-none focus:border-green-700 focus:shadow-outline-green transition ease-in-out duration-150 sm:text-sm sm:leading-5",
+                                              attrs: {
+                                                "wire:click.prevent": "store()",
+                                                type: "button"
+                                              },
+                                              on: {
+                                                click: function($event) {
+                                                  return _vm.save(_vm.data)
+                                                }
                                               }
-                                            ],
-                                            staticClass:
-                                              "inline-flex justify-center w-full rounded-md border border-transparent px-4 py-2 bg-green-600 text-base leading-6 font-medium text-white shadow-sm hover:bg-green-500 focus:outline-none focus:border-green-700 focus:shadow-outline-green transition ease-in-out duration-150 sm:text-sm sm:leading-5",
-                                            attrs: {
-                                              "wire:click.prevent": "store()",
-                                              type: "button"
                                             },
-                                            on: {
-                                              click: function($event) {
-                                                return _vm.save(_vm.data)
+                                            [
+                                              _vm._v(
+                                                "\n                      Save\n                    "
+                                              )
+                                            ]
+                                          )
+                                        ]
+                                      ),
+                                      _vm._v(" "),
+                                      _c(
+                                        "span",
+                                        {
+                                          staticClass:
+                                            "flex w-full rounded-md shadow-sm sm:ml-3 sm:w-auto"
+                                        },
+                                        [
+                                          _c(
+                                            "button",
+                                            {
+                                              directives: [
+                                                {
+                                                  name: "show",
+                                                  rawName: "v-show",
+                                                  value: _vm.editMode,
+                                                  expression: "editMode"
+                                                }
+                                              ],
+                                              staticClass:
+                                                "inline-flex justify-center w-full rounded-md border border-transparent px-4 py-2 bg-green-600 text-base leading-6 font-medium text-white shadow-sm hover:bg-green-500 focus:outline-none focus:border-green-700 focus:shadow-outline-green transition ease-in-out duration-150 sm:text-sm sm:leading-5",
+                                              attrs: {
+                                                "wire:click.prevent": "store()",
+                                                type: "button"
+                                              },
+                                              on: {
+                                                click: function($event) {
+                                                  return _vm.update(_vm.form)
+                                                }
                                               }
-                                            }
-                                          },
-                                          [_vm._v("Save")]
-                                        )
-                                      ]
-                                    ),
-                                    _vm._v(" "),
-                                    _c(
-                                      "span",
-                                      {
-                                        staticClass:
-                                          "flex w-full rounded-md shadow-sm sm:ml-3 sm:w-auto"
-                                      },
-                                      [
-                                        _c(
-                                          "button",
-                                          {
-                                            directives: [
-                                              {
-                                                name: "show",
-                                                rawName: "v-show",
-                                                value: _vm.editMode,
-                                                expression: "editMode"
-                                              }
-                                            ],
-                                            staticClass:
-                                              "inline-flex justify-center w-full rounded-md border border-transparent px-4 py-2 bg-green-600 text-base leading-6 font-medium text-white shadow-sm hover:bg-green-500 focus:outline-none focus:border-green-700 focus:shadow-outline-green transition ease-in-out duration-150 sm:text-sm sm:leading-5",
-                                            attrs: {
-                                              "wire:click.prevent": "store()",
-                                              type: "button"
                                             },
-                                            on: {
-                                              click: function($event) {
-                                                return _vm.update(_vm.form)
+                                            [
+                                              _vm._v(
+                                                "\n                      Update\n                    "
+                                              )
+                                            ]
+                                          )
+                                        ]
+                                      ),
+                                      _vm._v(" "),
+                                      _c(
+                                        "span",
+                                        {
+                                          staticClass:
+                                            "mt-3 flex w-full rounded-md shadow-sm sm:mt-0 sm:w-auto"
+                                        },
+                                        [
+                                          _c(
+                                            "button",
+                                            {
+                                              staticClass:
+                                                "inline-flex justify-center w-full rounded-md border border-gray-300 px-4 py-2 bg-white text-base leading-6 font-medium text-gray-700 shadow-sm hover:text-gray-500 focus:outline-none focus:border-blue-300 focus:shadow-outline-blue transition ease-in-out duration-150 sm:text-sm sm:leading-5",
+                                              attrs: { type: "button" },
+                                              on: {
+                                                click: function($event) {
+                                                  return _vm.closeModal()
+                                                }
                                               }
-                                            }
-                                          },
-                                          [_vm._v("Update")]
-                                        )
-                                      ]
-                                    ),
-                                    _vm._v(" "),
-                                    _c(
-                                      "span",
-                                      {
-                                        staticClass:
-                                          "mt-3 flex w-full rounded-md shadow-sm sm:mt-0 sm:w-auto"
-                                      },
-                                      [
-                                        _c(
-                                          "button",
-                                          {
-                                            staticClass:
-                                              "inline-flex justify-center w-full rounded-md border border-gray-300 px-4 py-2 bg-white text-base leading-6 font-medium text-gray-700 shadow-sm hover:text-gray-500 focus:outline-none focus:border-blue-300 focus:shadow-outline-blue transition ease-in-out duration-150 sm:text-sm sm:leading-5",
-                                            attrs: { type: "button" },
-                                            on: {
-                                              click: function($event) {
-                                                return _vm.closeModal()
-                                              }
-                                            }
-                                          },
-                                          [_vm._v("Cancel")]
-                                        )
-                                      ]
-                                    )
-                                  ]
-                                )
-                              ])
-                            ]
-                          )
-                        ]
-                      )
-                    ]
-                  )
-                : _vm._e()
-            ]
+                                            },
+                                            [
+                                              _vm._v(
+                                                "\n                      Cancel\n                    "
+                                              )
+                                            ]
+                                          )
+                                        ]
+                                      )
+                                    ]
+                                  )
+                                ])
+                              ]
+                            )
+                          ]
+                        )
+                      ]
+                    )
+                  : _vm._e()
+              ])
+            ],
+            1
           )
         ])
       ])
@@ -47708,6 +47757,8 @@ var render = function() {
             ? _c("Modal", {
                 attrs: {
                   start: _vm.dateAppt,
+                  title: _vm.title,
+                  session: _vm.timeSesion,
                   hour: _vm.hourAppt,
                   events: _vm.events
                 },
@@ -47795,14 +47846,6 @@ var render = function() {
                             ),
                             _vm._v(" "),
                             _c("input", {
-                              directives: [
-                                {
-                                  name: "model",
-                                  rawName: "v-model",
-                                  value: _vm.form.title,
-                                  expression: "form.title"
-                                }
-                              ],
                               staticClass:
                                 "shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline",
                               attrs: {
@@ -47810,19 +47853,7 @@ var render = function() {
                                 id: "exampleFormControlInput1",
                                 placeholder: "Ingresa el motivo de la consulta"
                               },
-                              domProps: { value: _vm.form.title },
-                              on: {
-                                input: function($event) {
-                                  if ($event.target.composing) {
-                                    return
-                                  }
-                                  _vm.$set(
-                                    _vm.form,
-                                    "title",
-                                    $event.target.value
-                                  )
-                                }
-                              }
+                              domProps: { value: _vm.title }
                             }),
                             _vm._v(" "),
                             _vm.$page.errors.title
@@ -47896,39 +47927,10 @@ var render = function() {
                               _c(
                                 "select",
                                 {
-                                  directives: [
-                                    {
-                                      name: "model",
-                                      rawName: "v-model",
-                                      value: _vm.form.session,
-                                      expression: "form.session"
-                                    }
-                                  ],
                                   staticClass:
                                     "mt-1 block form-select w-full py-2 px-3 border border-gray-300 bg-white rounded-md shadow-sm focus:outline-none focus:shadow-outline-blue focus:border-blue-300 transition duration-150 ease-in-out sm:text-sm sm:leading-5",
                                   attrs: { id: "timeSesion" },
-                                  on: {
-                                    change: function($event) {
-                                      var $$selectedVal = Array.prototype.filter
-                                        .call($event.target.options, function(
-                                          o
-                                        ) {
-                                          return o.selected
-                                        })
-                                        .map(function(o) {
-                                          var val =
-                                            "_value" in o ? o._value : o.value
-                                          return val
-                                        })
-                                      _vm.$set(
-                                        _vm.form,
-                                        "session",
-                                        $event.target.multiple
-                                          ? $$selectedVal
-                                          : $$selectedVal[0]
-                                      )
-                                    }
-                                  }
+                                  domProps: { value: _vm.session }
                                 },
                                 [
                                   _c("option", { attrs: { value: "1800" } }, [
@@ -62840,9 +62842,7 @@ window.axios.defaults.headers.common['X-Requested-With'] = 'XMLHttpRequest';
 __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _Calendar_vue_vue_type_template_id_052a41a9___WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./Calendar.vue?vue&type=template&id=052a41a9& */ "./resources/js/components/Calendar.vue?vue&type=template&id=052a41a9&");
 /* harmony import */ var _Calendar_vue_vue_type_script_lang_js___WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./Calendar.vue?vue&type=script&lang=js& */ "./resources/js/components/Calendar.vue?vue&type=script&lang=js&");
-/* empty/unused harmony star reexport *//* harmony import */ var _Calendar_vue_vue_type_style_index_0_lang_css___WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./Calendar.vue?vue&type=style&index=0&lang=css& */ "./resources/js/components/Calendar.vue?vue&type=style&index=0&lang=css&");
-/* harmony import */ var _node_modules_vue_loader_lib_runtime_componentNormalizer_js__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ../../../node_modules/vue-loader/lib/runtime/componentNormalizer.js */ "./node_modules/vue-loader/lib/runtime/componentNormalizer.js");
-
+/* empty/unused harmony star reexport *//* harmony import */ var _node_modules_vue_loader_lib_runtime_componentNormalizer_js__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ../../../node_modules/vue-loader/lib/runtime/componentNormalizer.js */ "./node_modules/vue-loader/lib/runtime/componentNormalizer.js");
 
 
 
@@ -62850,7 +62850,7 @@ __webpack_require__.r(__webpack_exports__);
 
 /* normalize component */
 
-var component = Object(_node_modules_vue_loader_lib_runtime_componentNormalizer_js__WEBPACK_IMPORTED_MODULE_3__["default"])(
+var component = Object(_node_modules_vue_loader_lib_runtime_componentNormalizer_js__WEBPACK_IMPORTED_MODULE_2__["default"])(
   _Calendar_vue_vue_type_script_lang_js___WEBPACK_IMPORTED_MODULE_1__["default"],
   _Calendar_vue_vue_type_template_id_052a41a9___WEBPACK_IMPORTED_MODULE_0__["render"],
   _Calendar_vue_vue_type_template_id_052a41a9___WEBPACK_IMPORTED_MODULE_0__["staticRenderFns"],
@@ -62879,22 +62879,6 @@ component.options.__file = "resources/js/components/Calendar.vue"
 __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _node_modules_babel_loader_lib_index_js_ref_4_0_node_modules_vue_loader_lib_index_js_vue_loader_options_Calendar_vue_vue_type_script_lang_js___WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! -!../../../node_modules/babel-loader/lib??ref--4-0!../../../node_modules/vue-loader/lib??vue-loader-options!./Calendar.vue?vue&type=script&lang=js& */ "./node_modules/babel-loader/lib/index.js?!./node_modules/vue-loader/lib/index.js?!./resources/js/components/Calendar.vue?vue&type=script&lang=js&");
 /* empty/unused harmony star reexport */ /* harmony default export */ __webpack_exports__["default"] = (_node_modules_babel_loader_lib_index_js_ref_4_0_node_modules_vue_loader_lib_index_js_vue_loader_options_Calendar_vue_vue_type_script_lang_js___WEBPACK_IMPORTED_MODULE_0__["default"]); 
-
-/***/ }),
-
-/***/ "./resources/js/components/Calendar.vue?vue&type=style&index=0&lang=css&":
-/*!*******************************************************************************!*\
-  !*** ./resources/js/components/Calendar.vue?vue&type=style&index=0&lang=css& ***!
-  \*******************************************************************************/
-/*! no static exports found */
-/***/ (function(module, __webpack_exports__, __webpack_require__) {
-
-"use strict";
-__webpack_require__.r(__webpack_exports__);
-/* harmony import */ var _node_modules_style_loader_index_js_node_modules_css_loader_index_js_ref_6_1_node_modules_vue_loader_lib_loaders_stylePostLoader_js_node_modules_postcss_loader_src_index_js_ref_6_2_node_modules_vue_loader_lib_index_js_vue_loader_options_Calendar_vue_vue_type_style_index_0_lang_css___WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! -!../../../node_modules/style-loader!../../../node_modules/css-loader??ref--6-1!../../../node_modules/vue-loader/lib/loaders/stylePostLoader.js!../../../node_modules/postcss-loader/src??ref--6-2!../../../node_modules/vue-loader/lib??vue-loader-options!./Calendar.vue?vue&type=style&index=0&lang=css& */ "./node_modules/style-loader/index.js!./node_modules/css-loader/index.js?!./node_modules/vue-loader/lib/loaders/stylePostLoader.js!./node_modules/postcss-loader/src/index.js?!./node_modules/vue-loader/lib/index.js?!./resources/js/components/Calendar.vue?vue&type=style&index=0&lang=css&");
-/* harmony import */ var _node_modules_style_loader_index_js_node_modules_css_loader_index_js_ref_6_1_node_modules_vue_loader_lib_loaders_stylePostLoader_js_node_modules_postcss_loader_src_index_js_ref_6_2_node_modules_vue_loader_lib_index_js_vue_loader_options_Calendar_vue_vue_type_style_index_0_lang_css___WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(_node_modules_style_loader_index_js_node_modules_css_loader_index_js_ref_6_1_node_modules_vue_loader_lib_loaders_stylePostLoader_js_node_modules_postcss_loader_src_index_js_ref_6_2_node_modules_vue_loader_lib_index_js_vue_loader_options_Calendar_vue_vue_type_style_index_0_lang_css___WEBPACK_IMPORTED_MODULE_0__);
-/* harmony reexport (unknown) */ for(var __WEBPACK_IMPORT_KEY__ in _node_modules_style_loader_index_js_node_modules_css_loader_index_js_ref_6_1_node_modules_vue_loader_lib_loaders_stylePostLoader_js_node_modules_postcss_loader_src_index_js_ref_6_2_node_modules_vue_loader_lib_index_js_vue_loader_options_Calendar_vue_vue_type_style_index_0_lang_css___WEBPACK_IMPORTED_MODULE_0__) if(["default"].indexOf(__WEBPACK_IMPORT_KEY__) < 0) (function(key) { __webpack_require__.d(__webpack_exports__, key, function() { return _node_modules_style_loader_index_js_node_modules_css_loader_index_js_ref_6_1_node_modules_vue_loader_lib_loaders_stylePostLoader_js_node_modules_postcss_loader_src_index_js_ref_6_2_node_modules_vue_loader_lib_index_js_vue_loader_options_Calendar_vue_vue_type_style_index_0_lang_css___WEBPACK_IMPORTED_MODULE_0__[key]; }) }(__WEBPACK_IMPORT_KEY__));
-
 
 /***/ }),
 

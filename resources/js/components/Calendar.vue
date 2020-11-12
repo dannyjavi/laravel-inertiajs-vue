@@ -5,8 +5,10 @@
       <Modal
         v-if="showModal"
         :start="dateAppt"
+        :title="title"
+        :session="timeSesion"
         :hour="hourAppt"
-        :events='events'
+        :events="events"
         @closeModal="closeWindow"
         @save="saveAppt"
       />
@@ -31,11 +33,14 @@ export default {
     Fullcalendar,
     Modal
   },
-  props:['events'],
+  props: ["events"],
   data() {
     return {
       url: "/appointment",
       dateAppt: "",
+      hourAppt: "",
+      title: "",
+      timeSesion: "",
       endTime: "",
       showModal: false,
       calendarOptions: {
@@ -47,17 +52,21 @@ export default {
         },
         locale: "es",
         initialView: "timeGridWeek",
+        events: "",
         dateClick: this.handleDateClick,
-        events: ''
+        eventClick: this.handleEventClick
       }
     };
   },
-  created(){
-    this.$data.calendarOptions.events = this.events
+  created() {
+    this.getEvents();
   },
   methods: {
+    getEvents() {
+      this.$data.calendarOptions.events = this.events;
+    },
     handleDateClick(arg) {
-      this.dateAppt = arg.dateStr.substr(0,10)
+      this.dateAppt = arg.dateStr.substr(0, 10);
       this.hourAppt = arg.dateStr.substr(11, 8);
       this.showModal = true;
     },
@@ -67,50 +76,46 @@ export default {
     saveAppt(formData) {
       let dataAppt = this.setTimeSesion(formData);
 
-      Inertia.post(this.url,dataAppt,{
-        onSuccess:() =>{
-        this.showModal = false;
+      Inertia.post(this.url, dataAppt, {
+        onSuccess: page => {
+          if (Object.entries(page.props.errors).length === 0) {
+            this.showModal = false;
+          }
+          this.getEvents();
         }
-      })
-      Inertia.on('error',event =>{
-        event.preventDefault()
-        console.log(this.$page.error);
-      })
+      });
+      Inertia.on("error", event => {
+        event.preventDefault();
+        console.log(event.detail.error);
+      });
+    },
+    handleEventClick(clickInfo) {
+      this.showModal = true;
+      this.loadModal(clickInfo)
     },
     setTimeSesion(form) {
-      const timeSesion = parseInt(form.session)
+      const timeSesion = parseInt(form.session);
       const initSesion = new Date(form.start);
-      let getSecondsSesion = initSesion.getSeconds() + timeSesion
-      initSesion.setSeconds(getSecondsSesion)
+      let getSecondsSesion = initSesion.getSeconds() + timeSesion;
+      initSesion.setSeconds(getSecondsSesion);
 
-      let time = formatTime(initSesion)
+      let time = formatTime(initSesion);
 
       const objApt = {
         title: form.title,
         start: form.start,
         end: time,
         session: timeSesion,
-        price: ''
-      }
-      return objApt
+        price: ""
+      };
+      return objApt;
+    },
+    loadModal(obj){
+      this.title = obj.event.title;
+      this.dateAppt = obj.event.startStr.substr(0, 10)
+      this.hourAppt = obj.event.startStr.substr(11, 8)
+      this.timeSesion = obj.event.extendedProps.session
     }
   }
 };
 </script>
-
-<style>
-.fade-enter-active {
-  transition: opacity 0.5s;
-}
-
-.fade-leave-active {
-  transition: all 0.6s ease-out;
-}
-
-.fade-enter-from,
-.fade-leave-to {
-  transition: all 0.8s ease;
-  transform: translateX(20px);
-  opacity: 0;
-}
-</style>

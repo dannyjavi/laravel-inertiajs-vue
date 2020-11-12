@@ -24,7 +24,7 @@ class AppointmentController extends Controller
      */
     public function index()
     {
-        $events = Appointment::select("id","title","start","end")->get();
+        $events = Appointment::select("id","title","start","end","session","booked_by")->get();
         return Inertia::render('Agenda/Books',['events' => $events]);
     }
 
