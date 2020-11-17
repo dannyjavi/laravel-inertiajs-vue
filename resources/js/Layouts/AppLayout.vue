@@ -30,8 +30,8 @@
           <!-- Navigation Links -->
           <div class="hidden space-x-8 sm:-my-px sm:ml-10 sm:flex">
             <jet-nav-link
-              :href="route('appointment.index')"
-              :active="$page.currentRouteName == 'appointment'"
+              :href="route('events')"
+              :active="$page.currentRouteName == 'events'"
             >Books</jet-nav-link>
           </div>
 

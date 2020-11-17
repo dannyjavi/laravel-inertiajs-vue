@@ -8,7 +8,13 @@ class Appointment extends Model
 {
     use HasFactory;
 
-    protected $fillable = ['title', 'start', 'end','session','price','booked_by'];
+    protected $fillable = ['title', 'start', 'end','session','price','user_id'];
+
+
+    public function user()
+    {
+        return $this->belongsTo('App\Models\User');
+    }
 
     #Esta configuración es opcional .... 
     /* protected $fillable = ['title','start','end'];

@@ -6,6 +6,7 @@ use App\Http\Resources\Appointment as AppointmentResources;
 use App\Models\Appointment;
 
 use App\Http\Requests\Appointment as AppointmentRequest;
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Inertia\Inertia;
 
@@ -24,8 +25,9 @@ class AppointmentController extends Controller
      */
     public function index()
     {
-        $events = Appointment::select("id","title","start","end","session","booked_by")->get();
-        return Inertia::render('Agenda/Books',['events' => $events]);
+        $events = $this->apt->select("id","title","start","end","session","user_id")->get();
+        //return Inertia::render('Agenda/Books',['allEvents' => $events]);
+        return response()->json($events);
     }
 
     /**
@@ -60,7 +62,7 @@ class AppointmentController extends Controller
             'end' => $request->end,
             'session' => $request->session,
             'price' => $request->price,
-            'booked_by' => Auth::id()
+            'user_id' => Auth::id()
         ]);
         
         return redirect()->back()->with('message','Cita creada con éxito');
@@ -95,11 +97,14 @@ class AppointmentController extends Controller
      * @param  \App\Models\Appointment  $appointment
      * @return \Illuminate\Http\Response
      */
-    public function update(AppointmentRequest $request, Appointment $appointment)
+    public function update(Request $request, Appointment $appointment)
     {
-        $appointment->update($request->all());
+        //$appointment->update($request->all());
 
-        return response()->json(new AppointmentResources($appointment));
+        if ($request->has('id')) {
+            Appointment::find($request->id)->update($request->all());
+            return redirect()->back()->with('message', 'evento modificado!');
+        }
     }
 
     /**
@@ -112,6 +117,6 @@ class AppointmentController extends Controller
     {
         $appointment->delete();
         
-        return response()->json(null,204);
+        return redirect()->back()->with('message','Cita borrada con éxito');
     }
 }

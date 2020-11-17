@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
   
 use Illuminate\Http\Request;
 use App\Http\Requests\StoreUserForm;
+use App\Models\Appointment;
 use Inertia\Inertia;
 use App\Models\User;
 use Illuminate\Support\Facades\Validator;
@@ -62,10 +63,10 @@ class UserController extends Controller
     public function destroy(Request $request)
     {
         if ($request->has('id')) {
-            User::find($request->input('id'))->delete();
+            User::find($request->id)->delete();
             return redirect()
-                    ->back()
-                    ->with('message', 'Usuario eliminado!!');
+                ->back()
+                ->with('message', 'Paciente creado!!');
 
         }
     }

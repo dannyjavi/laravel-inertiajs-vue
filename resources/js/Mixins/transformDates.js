@@ -1,9 +1,12 @@
-export default function formatDate(date){
-    const options = {
-        year: 'numeric',
-        month: '2-digit',
-        day: '2-digit'
+export default function (date) {
+
+    let string = new Date(date)
+
+    let locale = 'en-GB'
+
+    let newAppt = {
+        start: string.toLocaleDateString(locale),
+        hour: string.toLocaleTimeString(locale)
     }
-    const string = new Date(date)
-    return string.toISOString('es-ES', options)
+    return newAppt
 };

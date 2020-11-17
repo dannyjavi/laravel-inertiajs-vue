@@ -1,6 +1,6 @@
-export default function formatDate(date){
+import moment from 'moment';
 
-    let string = new Date(date)
-
-    return string.toISOString().replace(/\//g,'-').split('T')[0]+' '+ string.toLocaleTimeString()
+export default function(start){
+    let fecha  = moment(start)
+    return fecha.format('YYYY-MM-DD HH:mm:ss')
 };

@@ -16,8 +16,9 @@ class AddSesionToAppointmentsTable extends Migration
         Schema::table('appointments', function (Blueprint $table) {
             $table->smallInteger('session')->after('end');
             $table->tinyInteger('price')->after('session')->default(0);
-            $table->smallInteger('booked_by')->after('price')->nullable();
-            $table->softDeletes('deleted_at', 0)->after('updated_at');	
+            $table->unsignedBigInteger('user_id');
+            $table->foreign('user_id')->references('id')->on('users');
+            $table->softDeletes('deleted_at', 0)->after('updated_at');
         });
     }
 
