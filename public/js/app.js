@@ -22302,9 +22302,9 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
     //Cargo los datos en el modal reactivo
     setModalData: function setModalData(dayTime) {
       this.newEvent.user_id = this.$page.user.id;
-      var res = dayTime.dateStr.split("T");
-      this.newEvent.date_at = res[0];
-      this.newEvent.hour = res[1].substr(0, 8);
+      var dateAndTime = dayTime.dateStr.split("T");
+      this.newEvent.date_at = dateAndTime[0];
+      this.newEvent.hour = dateAndTime[1].substr(0, 8);
       return;
     },
     // Cierro el modal
@@ -22375,6 +22375,7 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
     },
     loadModal: function loadModal(obj) {
       this.newEvent = {
+        id: obj.event.id,
         title: obj.event.title,
         date_at: obj.event.startStr.substr(0, 10),
         hour: obj.event.startStr.substr(11, 8),
@@ -22453,6 +22454,7 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
 
 "use strict";
 __webpack_require__.r(__webpack_exports__);
+//
 //
 //
 //
@@ -68911,7 +68913,8 @@ var render = function() {
                           attrs: {
                             type: "text",
                             id: "exampleFormControlInput1",
-                            placeholder: "Ingresa el motivo de la consulta"
+                            placeholder: "Ingresa el motivo de la consulta",
+                            autocomplete: "off"
                           },
                           domProps: { value: _vm.form.title },
                           on: {
@@ -69061,15 +69064,15 @@ var render = function() {
                           },
                           [
                             _c("option", { attrs: { value: "1800" } }, [
-                              _vm._v("Media sesión")
+                              _vm._v("30 minutes")
                             ]),
                             _vm._v(" "),
                             _c("option", { attrs: { value: "3600" } }, [
-                              _vm._v("Sesión completa")
+                              _vm._v("1 hour")
                             ]),
                             _vm._v(" "),
                             _c("option", { attrs: { value: "900" } }, [
-                              _vm._v("Vendaje Neuromuscular")
+                              _vm._v("3/4 hour")
                             ])
                           ]
                         )

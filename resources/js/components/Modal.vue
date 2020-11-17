@@ -29,6 +29,7 @@
                   id="exampleFormControlInput1"
                   placeholder="Ingresa el motivo de la consulta"
                   v-model="form.title"
+                  autocomplete="off"
                 />
                 <div v-if="$page.errors.title" class="text-red-500">
                   {{ $page.errors.title[0] }}
@@ -75,9 +76,9 @@
                   id="timeSesion"
                   class="mt-1 block form-select w-full py-2 px-3 border border-gray-300 bg-white rounded-md shadow-sm focus:outline-none focus:shadow-outline-blue focus:border-blue-300 transition duration-150 ease-in-out sm:text-sm sm:leading-5"
                 >
-                  <option value=1800>Media sesión</option>
-                  <option value=3600>Sesión completa</option>
-                  <option value=900>Vendaje Neuromuscular</option>
+                  <option value=1800>30 minutes</option>
+                  <option value=3600>1 hour</option>
+                  <option value=900>3/4 hour</option>
                 </select>
               </div>
 

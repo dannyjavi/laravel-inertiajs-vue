@@ -103,9 +103,9 @@ export default {
     //Cargo los datos en el modal reactivo
     setModalData(dayTime) {
       this.newEvent.user_id = this.$page.user.id;
-      let res = dayTime.dateStr.split("T");
-      this.newEvent.date_at = res[0];
-      this.newEvent.hour = res[1].substr(0, 8);
+      let dateAndTime = dayTime.dateStr.split("T");
+      this.newEvent.date_at = dateAndTime[0];
+      this.newEvent.hour = dateAndTime[1].substr(0, 8);
       return;
     },
     // Cierro el modal
@@ -174,6 +174,7 @@ export default {
     },
     loadModal(obj) {
       this.newEvent = {
+        id: obj.event.id,
         title: obj.event.title,
         date_at: obj.event.startStr.substr(0, 10),
         hour: obj.event.startStr.substr(11, 8),
@@ -213,7 +214,7 @@ export default {
     // Actualizar Evento
     updateAppt(obj) {
       const copyAppt = { ...this.newEvent };
-      const res = this.setDurationSesion(copyAppt);
+      let res = this.setDurationSesion(copyAppt);
 
       Inertia.put(route("appointment.update", `${res.id}`), res, {
         preserveScroll: true,

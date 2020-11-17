@@ -26,7 +26,6 @@ class AppointmentController extends Controller
     public function index()
     {
         $events = $this->apt->select("id","title","start","end","session","user_id")->get();
-        //return Inertia::render('Agenda/Books',['allEvents' => $events]);
         return response()->json($events);
     }
 
@@ -66,28 +65,6 @@ class AppointmentController extends Controller
         ]);
         
         return redirect()->back()->with('message','Cita creada con éxito');
-    }
-
-    /**
-     * Display the specified resource.
-     *
-     * @param  \App\Models\Appointment  $appointment
-     * @return \Illuminate\Http\Response
-     */
-    public function show(Appointment $appointment)
-    {
-        return response()->json(new AppointmentResources($appointment));
-    }
-
-    /**
-     * Show the form for editing the specified resource.
-     *
-     * @param  \App\Models\Appointment  $appointment
-     * @return \Illuminate\Http\Response
-     */
-    public function edit(Appointment $appointment)
-    {
-        return $appointment;
     }
 
     /**
