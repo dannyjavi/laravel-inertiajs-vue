@@ -6,19 +6,15 @@ use App\Http\Controllers\AppointmentController;
 use App\Http\Controllers\MyEventController;
 use App\Http\Controllers\UserController;
 
-Route::get('/', function () {
-    return view('welcome');
+Route::redirect('/','/login');
+
+Route::middleware(['auth:sanctum', 'verified'])->group(function(){
+    Route::get('/myEvents', MyEventController::class);
+    
+    Route::get('/events', function () {
+        return Inertia::render('Agenda/Books');
+    })->name('events');
+    
+    Route::resource('users', UserController::class);
+    Route::resource('appointment', AppointmentController::class);
 });
-
-Route::middleware(['auth:sanctum', 'verified'])->get('/dashboard', function () {
-    return Inertia::render('Dashboard');
-})->name('dashboard');
-
-Route::get('/myEvents', MyEventController::class);
-
-Route::get('/events', function (){
-    return Inertia::render('Agenda/Books');
-})->name('events');
-
-Route::resource('users', UserController::class);
-Route::resource('appointment', AppointmentController::class);
