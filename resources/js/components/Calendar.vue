@@ -70,8 +70,9 @@ export default {
     };
   },
   beforeMount() {
-    //this.allEvents[0].color = '#C21DF0'
-    this.$data.calendarOptions.events = this.allEvents
+    this.$data.calendarOptions.events = {
+        url: route('appointment.index')
+      }
     if (this.$page.user.email === "d@d.es") {
       this.$data.calendarOptions.eventSources = [
         {
@@ -111,7 +112,7 @@ export default {
       this.newEvent = this.resetModal();
     },
     refreshCalendar() {
-      this.calendarEl.refetchEvents();
+      this.calendarEl.refetchEvents()
     },
     // guardo el evento en DB
     saveAppt(formData) {

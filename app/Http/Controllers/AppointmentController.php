@@ -28,9 +28,10 @@ class AppointmentController extends Controller
     {
         $events = $this->apt::all();
 
-        return Inertia::render('Agenda/Books', [
+        /* return Inertia::render('Agenda/Books', [
             'listAppt' => $events,
-          ]);
+          ]); */
+          return response()->json($events);
   
     }
 

@@ -20625,14 +20625,6 @@ __webpack_require__.r(__webpack_exports__);
 //
 //
 //
-//
-//
-//
-//
-//
-//
-//
-//
 
 
 
@@ -21329,7 +21321,9 @@ __webpack_require__.r(__webpack_exports__);
 
 /* harmony default export */ __webpack_exports__["default"] = ({
   name: "Books",
-  props: ["listAppt"],
+  props: {
+    listAppt: Array
+  },
   components: {
     Calendar: _components_Calendar__WEBPACK_IMPORTED_MODULE_0__["default"],
     AppLayout: _Layouts_AppLayout__WEBPACK_IMPORTED_MODULE_1__["default"]
@@ -21338,9 +21332,6 @@ __webpack_require__.r(__webpack_exports__);
     eventList: function eventList() {
       return this.listAppt;
     }
-  },
-  created: function created() {
-    this.listAppt[0].color = '#C21DF0';
   }
 });
 
@@ -22275,8 +22266,9 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
     };
   },
   beforeMount: function beforeMount() {
-    //this.allEvents[0].color = '#C21DF0'
-    this.$data.calendarOptions.events = this.allEvents;
+    this.$data.calendarOptions.events = {
+      url: route('appointment.index')
+    };
 
     if (this.$page.user.email === "d@d.es") {
       this.$data.calendarOptions.eventSources = [{
@@ -65583,24 +65575,6 @@ var render = function() {
                     }
                   },
                   [_vm._v("Users")]
-                )
-              ],
-              1
-            ),
-            _vm._v(" "),
-            _c(
-              "div",
-              { staticClass: "hidden space-x-8 sm:-my-px sm:ml-10 sm:flex" },
-              [
-                _c(
-                  "jet-nav-link",
-                  {
-                    attrs: {
-                      href: _vm.route("appointment.index"),
-                      active: _vm.$page.currentRouteName == "appointment.index"
-                    }
-                  },
-                  [_vm._v("Books")]
                 )
               ],
               1

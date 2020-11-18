@@ -24,7 +24,9 @@ import { Inertia } from "@inertiajs/inertia";
 
 export default {
   name: "Books",
-  props: ["listAppt"],
+  props: {
+    listAppt: Array
+    },
   components: {
     Calendar,
     AppLayout
@@ -33,9 +35,6 @@ export default {
     eventList() {
       return this.listAppt
     }
-  },
-  created(){
-    this.listAppt[0].color = '#C21DF0'
   }
 };
 </script>
