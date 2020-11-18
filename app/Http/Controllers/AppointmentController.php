@@ -6,6 +6,7 @@ use App\Http\Resources\Appointment as AppointmentResources;
 use App\Models\Appointment;
 
 use App\Http\Requests\Appointment as AppointmentRequest;
+use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Inertia\Inertia;
@@ -25,8 +26,12 @@ class AppointmentController extends Controller
      */
     public function index()
     {
-        $events = $this->apt->select("id","title","start","end","session","user_id")->get();
-        return response()->json($events);
+        $events = $this->apt::all();
+
+        return Inertia::render('Agenda/Books', [
+            'listAppt' => $events,
+          ]);
+  
     }
 
     /**

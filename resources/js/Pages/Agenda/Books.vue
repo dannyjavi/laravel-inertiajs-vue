@@ -33,6 +33,9 @@ export default {
     eventList() {
       return this.listAppt
     }
+  },
+  created(){
+    console.log(this.listAppt);
   }
 };
 </script>

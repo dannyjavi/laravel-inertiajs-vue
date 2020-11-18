@@ -33,7 +33,9 @@ export default {
     Fullcalendar,
     Modal
   },
-  props: ["allEvents"],
+  props: {
+    allEvents: Array
+  },
   data() {
     return {
       newEvent: {
@@ -69,23 +71,18 @@ export default {
     };
   },
   beforeMount() {
-    this.$data.calendarOptions.eventSources = [
-      //this.allEvents, // public events
-      {
-        url: route("appointment.index"),
-        method: "GET",
-        failure: function(err) {
-          alert(
-            "No podemos cargar los eventos del calendario, inténtalo de nuevo pasados unos minutos"
-          );
-        },
-        color: "#BA00D0"
-      },
-      {
-        url: "myEvents", // private events
-        color: "#1ABC9C"
-      }
-    ];
+    this.$data.calendarOptions.events = this.allEvents
+    if (this.$page.user.email === "d@d.es") {
+      this.$data.calendarOptions.eventSources = [
+        {
+          url: "myEvents", // private events
+          color: "#1ABC9C",
+          failure: error => {
+            console.log('mostrando errores: ', error.message);
+          }
+        }
+      ];
+    }
   },
   mounted() {
     this.getCalendarApi();
@@ -134,9 +131,9 @@ export default {
       Inertia.post(route("appointment.store"), dataAppt, {
         onSuccess: page => {
           if (Object.entries(page.props.errors).length === 0) {
+            console.log(page);
             this.showModal = false;
             this.newEvent = this.resetModal();
-
             this.refreshCalendar();
           }
         }

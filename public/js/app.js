@@ -21338,6 +21338,9 @@ __webpack_require__.r(__webpack_exports__);
     eventList: function eventList() {
       return this.listAppt;
     }
+  },
+  created: function created() {
+    console.log(this.listAppt);
   }
 });
 
@@ -22232,7 +22235,9 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
     Fullcalendar: _fullcalendar_vue__WEBPACK_IMPORTED_MODULE_0__["default"],
     Modal: _Modal__WEBPACK_IMPORTED_MODULE_9__["default"]
   },
-  props: ["allEvents"],
+  props: {
+    allEvents: Array
+  },
   data: function data() {
     return {
       newEvent: {
@@ -22271,19 +22276,18 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
     };
   },
   beforeMount: function beforeMount() {
-    this.$data.calendarOptions.eventSources = [//this.allEvents, // public events
-    {
-      url: route("appointment.index"),
-      method: "GET",
-      failure: function failure(err) {
-        alert("No podemos cargar los eventos del calendario, inténtalo de nuevo pasados unos minutos");
-      },
-      color: "#BA00D0"
-    }, {
-      url: "myEvents",
-      // private events
-      color: "#1ABC9C"
-    }];
+    this.$data.calendarOptions.events = this.allEvents;
+
+    if (this.$page.user.email === "d@d.es") {
+      this.$data.calendarOptions.eventSources = [{
+        url: "myEvents",
+        // private events
+        color: "#1ABC9C",
+        failure: function failure(error) {
+          console.log('mostrando errores: ', error.message);
+        }
+      }];
+    }
   },
   mounted: function mounted() {
     this.getCalendarApi();
@@ -22334,6 +22338,7 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
       _inertiajs_inertia__WEBPACK_IMPORTED_MODULE_5__["Inertia"].post(route("appointment.store"), dataAppt, {
         onSuccess: function onSuccess(page) {
           if (Object.entries(page.props.errors).length === 0) {
+            console.log(page);
             _this.showModal = false;
             _this.newEvent = _this.resetModal();
 
@@ -65591,8 +65596,8 @@ var render = function() {
                   "jet-nav-link",
                   {
                     attrs: {
-                      href: _vm.route("events"),
-                      active: _vm.$page.currentRouteName == "events"
+                      href: _vm.route("appointment.index"),
+                      active: _vm.$page.currentRouteName == "appointment.index"
                     }
                   },
                   [_vm._v("Books")]
