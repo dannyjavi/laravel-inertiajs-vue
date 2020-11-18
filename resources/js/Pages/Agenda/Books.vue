@@ -35,7 +35,7 @@ export default {
     }
   },
   created(){
-    console.log(this.listAppt);
+    this.listAppt[0].color = '#C21DF0'
   }
 };
 </script>

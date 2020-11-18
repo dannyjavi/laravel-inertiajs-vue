@@ -66,11 +66,11 @@ export default {
         height: "100%",
         dateClick: this.handleDateClick,
         eventClick: this.handleEventClick
-      },
-      calendarEl: {}
+      }
     };
   },
   beforeMount() {
+    //this.allEvents[0].color = '#C21DF0'
     this.$data.calendarOptions.events = this.allEvents
     if (this.$page.user.email === "d@d.es") {
       this.$data.calendarOptions.eventSources = [

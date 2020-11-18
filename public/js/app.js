@@ -21340,7 +21340,7 @@ __webpack_require__.r(__webpack_exports__);
     }
   },
   created: function created() {
-    console.log(this.listAppt);
+    this.listAppt[0].color = '#C21DF0';
   }
 });
 
@@ -22271,11 +22271,11 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
         height: "100%",
         dateClick: this.handleDateClick,
         eventClick: this.handleEventClick
-      },
-      calendarEl: {}
+      }
     };
   },
   beforeMount: function beforeMount() {
+    //this.allEvents[0].color = '#C21DF0'
     this.$data.calendarOptions.events = this.allEvents;
 
     if (this.$page.user.email === "d@d.es") {
