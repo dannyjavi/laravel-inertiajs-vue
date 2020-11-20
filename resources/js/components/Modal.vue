@@ -21,8 +21,63 @@
                 <label
                   for="exampleFormControlInput1"
                   class="block text-gray-700 text-sm font-bold mb-2"
-                  >Motivo:</label
-                >
+                >Buscar Paciente</label>
+                <!-- Buscador way -->
+                <div class="flex flex-col relative" v-if="isAdmin">
+                  <div class="w-full">
+                    <div class="my-2 p-1 bg-white flex border border-gray-200 rounded">
+                      <div class="flex flex-auto flex-wrap"></div>
+                      <input
+                        v-model="term"
+                        @keyup="getUser"
+                        @blur="closeList"
+                        placeholder="Buscar paciente"
+                        class="p-1 px-2 appearance-none outline-none w-full text-gray-800"
+                      />
+                      <div
+                        v-if="isSearching"
+                        class="text-gray-300 w-8 py-1 pl-2 pr-1 border-l flex items-center border-gray-200"
+                      >
+                        <button
+                          type="button"
+                          @click="closeList"
+                          class="cursor-pointer w-6 h-6 text-red-600 outline-none focus:outline-none"
+                        >
+                          <svg
+                            xmlns="http://www.w3.org/2000/svg"
+                            width="100%"
+                            height="100%"
+                            fill="none"
+                            viewBox="0 0 24 24"
+                            stroke="currentColor"
+                            stroke-width="2"
+                            stroke-linecap="round"
+                            stroke-linejoin="round"
+                            class="feather feather-chevron-up w-4 h-4"
+                          >
+                            <polyline points="18 15 12 9 6 15" />
+                          </svg>
+                        </button>
+                      </div>
+                    </div>
+                  </div>
+                  <!-- Options select -->
+                  <div
+                    class="absolute shadow bg-white top-100 z-40 w-full lef-0 rounded max-h-select overflow-y-auto svelte-5uyqqj"
+                  >
+                    <!-- partial component -->
+                    <Users v-if="isSearching" :userList="allUsers" @click="selectedUser" />
+                  </div>
+                  <!-- end Options -->
+                </div>
+                <!-- comienzo input -->
+              </div>
+              <!-- end Buscador -->
+              <div class="mb-4">
+                <label
+                  for="exampleFormControlInput1"
+                  class="block text-gray-700 text-sm font-bold mb-2"
+                >Motivo:</label>
                 <input
                   type="text"
                   class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
@@ -31,16 +86,13 @@
                   v-model="form.title"
                   autocomplete="off"
                 />
-                <div v-if="$page.errors.title" class="text-red-500">
-                  {{ $page.errors.title[0] }}
-                </div>
+                <div v-if="$page.errors.title" class="text-red-500">{{ $page.errors.title[0] }}</div>
               </div>
               <div class="mb-4">
                 <label
                   for="exampleFormControlInput1"
                   class="block text-gray-700 text-sm font-bold mb-2"
-                  >Fecha</label
-                >
+                >Fecha</label>
                 <input
                   disabled="true"
                   type="text"
@@ -54,8 +106,7 @@
                 <label
                   for="exampleFormControlInput2"
                   class="block text-gray-700 text-sm font-bold mb-2"
-                  >Hora</label
-                >
+                >Hora</label>
                 <input
                   disabled="true"
                   type="time"
@@ -69,19 +120,17 @@
                 <label
                   for="timeSesion"
                   class="block text-sm font-medium leading-5 text-gray-700"
-                  >Duración</label
-                >
+                >Duración</label>
                 <select
                   v-model="form.session"
                   id="timeSesion"
                   class="mt-1 block form-select w-full py-2 px-3 border border-gray-300 bg-white rounded-md shadow-sm focus:outline-none focus:shadow-outline-blue focus:border-blue-300 transition duration-150 ease-in-out sm:text-sm sm:leading-5"
                 >
-                  <option value=1800>30 minutes</option>
-                  <option value=3600>1 hour</option>
-                  <option value=900>3/4 hour</option>
+                  <option value="1800">30 minutes</option>
+                  <option value="3600">1 hour</option>
+                  <option value="900">3/4 hour</option>
                 </select>
               </div>
-
               <!-- end select -->
             </div>
           </div>
@@ -92,9 +141,7 @@
                 type="button"
                 class="inline-flex justify-center w-full rounded-md border border-transparent px-4 py-2 bg-green-600 text-base leading-6 font-medium text-white shadow-sm hover:bg-green-500 focus:outline-none focus:border-green-700 focus:shadow-outline-green transition ease-in-out duration-150 sm:text-sm sm:leading-5"
                 @click="processForm(form)"
-              >
-                {{ getActionBtnLabel }}
-              </button>
+              >{{ getActionBtnLabel }}</button>
             </span>
             <span class="flex w-full rounded-md shadow-sm sm:ml-3 sm:w-auto">
               <button
@@ -102,20 +149,14 @@
                 class="inline-flex justify-center w-full rounded-md border border-transparent px-4 py-2 bg-green-600 text-base leading-6 font-medium text-white shadow-sm hover:bg-green-500 focus:outline-none focus:border-green-700 focus:shadow-outline-green transition ease-in-out duration-150 sm:text-sm sm:leading-5"
                 @click="deleteTo(form)"
                 v-if="editMode"
-              >
-                Eliminar
-              </button>
+              >Eliminar</button>
             </span>
-            <span
-              class="mt-3 flex w-full rounded-md shadow-sm sm:mt-0 sm:w-auto"
-            >
+            <span class="mt-3 flex w-full rounded-md shadow-sm sm:mt-0 sm:w-auto">
               <button
                 @click="$emit('closeModal')"
                 type="button"
                 class="inline-flex justify-center w-full rounded-md border border-gray-300 px-4 py-2 bg-white text-base leading-6 font-medium text-gray-700 shadow-sm hover:text-gray-500 focus:outline-none focus:border-blue-300 focus:shadow-outline-blue transition ease-in-out duration-150 sm:text-sm sm:leading-5"
-              >
-                Cancel
-              </button>
+              >Cancel</button>
             </span>
           </div>
         </form>
@@ -125,30 +166,71 @@
 </template>
 
 <script>
+import { Inertia } from "@inertiajs/inertia";
+import Users from "../partials/users";
+
 export default {
   name: "Modal",
+  components: {
+    Users
+  },
   props: {
     errors: Object,
     editMode: Boolean,
     form: {
       type: Object,
-      default: {}
-    }
+      default: () => {}
+    },
+    users: Array,
+    default: () => {}
   },
   data() {
-    return {};
+    return {
+      term: "",
+      searching: false
+    };
   },
   computed: {
+    isAdmin() {
+      return this.$page.user.id === 1;
+    },
+    allUsers() {
+      return this.users;
+    },
     getActionBtnLabel() {
       return this.form.id !== "" ? "Actualizar" : "Reservar";
+    },
+    isSearching() {
+      return this.searching;
     }
   },
   methods: {
+    closeList() {
+      return this.searching = !this.searching
+    },
+    selectedUser(user) {
+      this.term = user.name;
+      this.searching = false;
+
+      if (this.$page.user.id === 2) {
+        this.form.user_id = user.id;
+        return;
+      }
+      this.form.user_id = this.$page.user.id;
+    },
+    getUser() {
+      if (this.term !== "") {
+        this.searching = true;
+        this.$emit("searchUser", this.term);
+        return;
+      }
+      alert("No puedes dejar vacío este campo de búsqueda");
+    },
     processForm(form) {
       if (this.form.id === "") {
         this.$emit("saveAppt", form);
-      } 
-      if (this.form.id !== ''){
+      }
+      if (this.form.id !== "") {
         this.$emit("editAppt", form);
       }
     },
@@ -159,7 +241,17 @@ export default {
 };
 </script>
 
-<style>
+<style scoped>
+.top-100 {
+  top: 100%;
+}
+.bottom-100 {
+  bottom: 100%;
+}
+
+.max-h-select {
+  max-height: 300px;
+}
 </style>
 
 

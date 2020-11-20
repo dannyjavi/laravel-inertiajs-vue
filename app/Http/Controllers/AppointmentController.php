@@ -26,13 +26,9 @@ class AppointmentController extends Controller
      */
     public function index()
     {
-        $events = $this->apt::all();
+        $events = $this->apt::orderBy('end', 'asc')->get();
 
-        /* return Inertia::render('Agenda/Books', [
-            'listAppt' => $events,
-          ]); */
-          return response()->json($events);
-  
+        return response()->json($events);  
     }
 
     /**
@@ -40,8 +36,11 @@ class AppointmentController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
-    public function create()
+    public function show(Request $request)
     {
+        return Inertia::render('Agenda/Books',[
+            'search' => 'hola #'.$request->term
+        ]);
     }
 
     /**

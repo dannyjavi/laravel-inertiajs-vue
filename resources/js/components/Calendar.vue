@@ -1,17 +1,19 @@
 <template>
   <div>
     <Fullcalendar ref="fullCalendar" :options="calendarOptions" />
-    <transition name="fade">
-      <Modal
+    <!--<transition name="fade">
+       <Modal
         v-if="showModal"
         :form="newEvent"
         :editMode="isEdit"
+        @getDataUser="getUser"
         @closeModal="closeWindow"
         @saveAppt="saveAppt"
         @deleteApt="removeAppt"
         @editAppt="updateAppt"
-      />
-    </transition>
+        @close="closeWindow"
+      /> 
+    </transition>-->
   </div>
 </template>
 
@@ -20,34 +22,34 @@ import Fullcalendar from "@fullcalendar/vue";
 import Daygrid from "@fullcalendar/daygrid";
 import Interaction from "@fullcalendar/interaction";
 import TimeGrid from "@fullcalendar/timegrid";
-import TimeList from "@fullcalendar/list";
+import TimeList from "@fullcalendar/list";/* 
 import { Inertia } from "@inertiajs/inertia";
 import NormalizeDate from "../Mixins/transformDates";
 import formatTime from "../Mixins/transformTime";
-import moment from "moment";
-import Modal from "./Modal";
+import moment from "moment"; 
+import Modal from "./Modal";*/
 
 export default {
   name: "Calendar",
   components: {
     Fullcalendar,
-    Modal
+    
   },
   props: {
-    allEvents: Array
+    
   },
   data() {
     return {
-      newEvent: {
+      /* newEvent: {
         id: "",
         title: "",
         date_at: "",
         hour: "",
         user_id: "",
         session: 1800
-      },
-      showModal: false,
-      isEdit: false,
+      }, */
+      /* showModal: false,
+      isEdit: false, */
       calendarOptions: {
         plugins: [Daygrid, Interaction, TimeGrid, TimeList],
         headerToolbar: {
@@ -89,16 +91,19 @@ export default {
     this.getCalendarApi();
   },
   methods: {
+    getUser(input){
+      console.log('estoy en calendar: ',input);
+    },
     // Recupero los eventos de la DB
     getCalendarApi() {
       this.calendarEl = this.$refs.fullCalendar.getApi();
     },
     // Función para el evento clic dentro del calendario
     handleDateClick(arg) {
-      this.showModal = true;
-      this.setModalData(arg);
+      this.$emit('openModal',arg);
+      //this.setModalData(arg);
     },
-    //Cargo los datos en el modal reactivo
+    /*Cargo los datos en el modal reactivo
     setModalData(dayTime) {
       this.newEvent.user_id = this.$page.user.id;
       let dateAndTime = dayTime.dateStr.split("T");
@@ -229,7 +234,7 @@ export default {
         event.preventDefault();
         console.log(event.detail.error);
       });
-    }
+    }*/
   }
 };
 </script>

@@ -18,10 +18,9 @@ class UserController extends Controller
      */
     public function index()
     {
-        $data = User::all();
-        return Inertia::render('Admin/users', ['data' => $data]);
-    }
-  
+        return Inertia::render('Admin/users', ['userList' => User::paginate()]);
+    }  
+    
     /**
      * Show the form for creating a new resource.
      *
