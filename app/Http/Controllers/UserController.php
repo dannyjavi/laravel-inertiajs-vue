@@ -7,6 +7,8 @@ use App\Http\Requests\StoreUserForm;
 use App\Models\Appointment;
 use Inertia\Inertia;
 use App\Models\User;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Redirect;
 use Illuminate\Support\Facades\Validator;
   
 class UserController extends Controller
@@ -18,7 +20,12 @@ class UserController extends Controller
      */
     public function index()
     {
-        return Inertia::render('Admin/users', ['userList' => User::paginate()]);
+        $id = Auth::id();
+        if($id === 1){
+            return Inertia::render('Admin/users', ['userList' => User::paginate()]);
+        }
+        return Inertia::render('Agenda/Books');
+
     }  
     
     /**

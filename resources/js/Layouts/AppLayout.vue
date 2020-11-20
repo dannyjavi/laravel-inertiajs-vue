@@ -22,7 +22,10 @@
             </div>
           </div>
           <!-- Navigation Links -->
-          <div class="hidden space-x-8 sm:-my-px sm:ml-10 sm:flex">
+          <div 
+          
+          v-if="$page.user.id === 1"
+           class="hidden space-x-8 sm:-my-px sm:ml-10 sm:flex">
             <jet-nav-link
               :href="route('users.index')"
               :active="$page.currentRouteName == 'users.index'"

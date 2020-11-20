@@ -20502,6 +20502,9 @@ __webpack_require__.r(__webpack_exports__);
 //
 //
 //
+//
+//
+//
 
 
 
@@ -65722,23 +65725,27 @@ var render = function() {
               )
             ]),
             _vm._v(" "),
-            _c(
-              "div",
-              { staticClass: "hidden space-x-8 sm:-my-px sm:ml-10 sm:flex" },
-              [
-                _c(
-                  "jet-nav-link",
+            _vm.$page.user.id === 1
+              ? _c(
+                  "div",
                   {
-                    attrs: {
-                      href: _vm.route("users.index"),
-                      active: _vm.$page.currentRouteName == "users.index"
-                    }
+                    staticClass: "hidden space-x-8 sm:-my-px sm:ml-10 sm:flex"
                   },
-                  [_vm._v("Users")]
+                  [
+                    _c(
+                      "jet-nav-link",
+                      {
+                        attrs: {
+                          href: _vm.route("users.index"),
+                          active: _vm.$page.currentRouteName == "users.index"
+                        }
+                      },
+                      [_vm._v("Users")]
+                    )
+                  ],
+                  1
                 )
-              ],
-              1
-            ),
+              : _vm._e(),
             _vm._v(" "),
             _c(
               "div",
