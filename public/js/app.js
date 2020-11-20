@@ -21138,8 +21138,8 @@ __webpack_require__.r(__webpack_exports__);
         }
       });
       _inertiajs_inertia__WEBPACK_IMPORTED_MODULE_2__["Inertia"].on("error", function (event) {
-        console.log("tenemos errores: ", event.detail.error);
-        event.preventDefault(); // Handle the error yourself
+        console.log("errores detectados: ", event.detail.error);
+        event.preventDefault(); // podemos manejar los errores como queramos
       });
     },
     reset: function reset() {
@@ -21148,12 +21148,7 @@ __webpack_require__.r(__webpack_exports__);
         email: null
       };
     },
-
-    /* submit(){
-      let res = this.$inertia.post(this.url, this.form)
-       console.log(res);
-    }, */
-    editForm: function editForm(data) {
+    edit: function edit(data) {
       this.form = Object.assign({}, data);
       this.editMode = true;
       this.openModal();
@@ -21161,23 +21156,37 @@ __webpack_require__.r(__webpack_exports__);
     update: function update(data) {
       var _this2 = this;
 
-      /* data._method = "PUT"
-      this.$inertia.post("/users/" + data.id, data)
-      this.reset()
-      this.closeModal()*/
-      data._method = "PUT";
-      _inertiajs_inertia__WEBPACK_IMPORTED_MODULE_2__["Inertia"].post(this.url + "/".concat(data.id), data, {
-        onFinish: function onFinish() {
-          _this2.reset();
+      _inertiajs_inertia__WEBPACK_IMPORTED_MODULE_2__["Inertia"].put(this.url + "/".concat(data.id), data, {
+        onSuccess: function onSuccess(page) {
+          if (Object.entries(page.props.errors).length === 0) {
+            _this2.isOpen = false;
 
-          _this2.isOpen = false;
+            _this2.reset();
+
+            return;
+          }
         }
+      });
+      _inertiajs_inertia__WEBPACK_IMPORTED_MODULE_2__["Inertia"].on("error", function (event) {
+        event.preventDefault();
+        console.log(event.detail.error);
       });
     },
     deleteRow: function deleteRow(data) {
-      if (!confirm("Are you sure want to remove?")) return;
-      data._method = "DELETE";
-      this.$inertia.post("/users/" + data.id, data);
+      var _this3 = this;
+
+      console.log(data);
+      if (!confirm("Estas seguro de borrar este elemento?")) return;
+      _inertiajs_inertia__WEBPACK_IMPORTED_MODULE_2__["Inertia"]["delete"]("/users/".concat(data.id), {
+        onSuccess: function onSuccess(page) {
+          if (Object.entries(page.props.errors).length === 0) {
+            _this3.isOpen = false;
+          }
+        }
+      });
+      _inertiajs_inertia__WEBPACK_IMPORTED_MODULE_2__["Inertia"].on("error", function (event) {
+        console.log('Corregir: ', event.detail.error);
+      });
       this.reset();
       this.closeModal();
     }
@@ -21195,15 +21204,22 @@ __webpack_require__.r(__webpack_exports__);
 
 "use strict";
 __webpack_require__.r(__webpack_exports__);
-/* harmony import */ var _components_Calendar__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../../components/Calendar */ "./resources/js/components/Calendar.vue");
-/* harmony import */ var _Layouts_AppLayout__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! @/Layouts/AppLayout */ "./resources/js/Layouts/AppLayout.vue");
-/* harmony import */ var _inertiajs_inertia__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! @inertiajs/inertia */ "./node_modules/@inertiajs/inertia/dist/index.js");
-/* harmony import */ var _inertiajs_inertia__WEBPACK_IMPORTED_MODULE_2___default = /*#__PURE__*/__webpack_require__.n(_inertiajs_inertia__WEBPACK_IMPORTED_MODULE_2__);
-/* harmony import */ var _Mixins_transformDates__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ../../Mixins/transformDates */ "./resources/js/Mixins/transformDates.js");
-/* harmony import */ var _Mixins_transformTime__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ../../Mixins/transformTime */ "./resources/js/Mixins/transformTime.js");
-/* harmony import */ var moment__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! moment */ "./node_modules/moment/moment.js");
-/* harmony import */ var moment__WEBPACK_IMPORTED_MODULE_5___default = /*#__PURE__*/__webpack_require__.n(moment__WEBPACK_IMPORTED_MODULE_5__);
-/* harmony import */ var _components_Modal__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(/*! ../../components/Modal */ "./resources/js/components/Modal.vue");
+/* harmony import */ var _components_Modal__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../../components/Modal */ "./resources/js/components/Modal.vue");
+/* harmony import */ var _components_Calendar__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../../components/Calendar */ "./resources/js/components/Calendar.vue");
+/* harmony import */ var _Layouts_AppLayout__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! @/Layouts/AppLayout */ "./resources/js/Layouts/AppLayout.vue");
+/* harmony import */ var _inertiajs_inertia__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! @inertiajs/inertia */ "./node_modules/@inertiajs/inertia/dist/index.js");
+/* harmony import */ var _inertiajs_inertia__WEBPACK_IMPORTED_MODULE_3___default = /*#__PURE__*/__webpack_require__.n(_inertiajs_inertia__WEBPACK_IMPORTED_MODULE_3__);
+/* harmony import */ var _Mixins_transformDates__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ../../Mixins/transformDates */ "./resources/js/Mixins/transformDates.js");
+/* harmony import */ var _Mixins_transformTime__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! ../../Mixins/transformTime */ "./resources/js/Mixins/transformTime.js");
+/* harmony import */ var moment__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(/*! moment */ "./node_modules/moment/moment.js");
+/* harmony import */ var moment__WEBPACK_IMPORTED_MODULE_6___default = /*#__PURE__*/__webpack_require__.n(moment__WEBPACK_IMPORTED_MODULE_6__);
+/* harmony import */ var _bus_event_bus__WEBPACK_IMPORTED_MODULE_7__ = __webpack_require__(/*! ../../bus/event-bus */ "./resources/js/bus/event-bus.js");
+function ownKeys(object, enumerableOnly) { var keys = Object.keys(object); if (Object.getOwnPropertySymbols) { var symbols = Object.getOwnPropertySymbols(object); if (enumerableOnly) symbols = symbols.filter(function (sym) { return Object.getOwnPropertyDescriptor(object, sym).enumerable; }); keys.push.apply(keys, symbols); } return keys; }
+
+function _objectSpread(target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i] != null ? arguments[i] : {}; if (i % 2) { ownKeys(Object(source), true).forEach(function (key) { _defineProperty(target, key, source[key]); }); } else if (Object.getOwnPropertyDescriptors) { Object.defineProperties(target, Object.getOwnPropertyDescriptors(source)); } else { ownKeys(Object(source)).forEach(function (key) { Object.defineProperty(target, key, Object.getOwnPropertyDescriptor(source, key)); }); } } return target; }
+
+function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
+
 //
 //
 //
@@ -21230,6 +21246,11 @@ __webpack_require__.r(__webpack_exports__);
 //
 //
 //
+//
+//
+
+/* Componentes */
+
 
 
 /* librerias */
@@ -21237,6 +21258,7 @@ __webpack_require__.r(__webpack_exports__);
 
 
 
+ //import del bus para comunicación entre eventos
 
 
 /* harmony default export */ __webpack_exports__["default"] = ({
@@ -21245,9 +21267,9 @@ __webpack_require__.r(__webpack_exports__);
     search: Array
   },
   components: {
-    Calendar: _components_Calendar__WEBPACK_IMPORTED_MODULE_0__["default"],
-    AppLayout: _Layouts_AppLayout__WEBPACK_IMPORTED_MODULE_1__["default"],
-    Modal: _components_Modal__WEBPACK_IMPORTED_MODULE_6__["default"]
+    Calendar: _components_Calendar__WEBPACK_IMPORTED_MODULE_1__["default"],
+    AppLayout: _Layouts_AppLayout__WEBPACK_IMPORTED_MODULE_2__["default"],
+    Modal: _components_Modal__WEBPACK_IMPORTED_MODULE_0__["default"]
   },
   data: function data() {
     return {
@@ -21266,8 +21288,6 @@ __webpack_require__.r(__webpack_exports__);
   },
   computed: {
     allUsers: function allUsers() {
-      console.warn('midiendo largo: ', this.notResults.length);
-
       if (this.notResults.length === 1 && this.search.length === 0) {
         return this.notResults;
       }
@@ -21279,8 +21299,7 @@ __webpack_require__.r(__webpack_exports__);
     searchUserDB: function searchUserDB(user) {
       var _this = this;
 
-      if (this.search === "") console.log("Buscar paciente");
-      _inertiajs_inertia__WEBPACK_IMPORTED_MODULE_2__["Inertia"].replace(route("events", {
+      _inertiajs_inertia__WEBPACK_IMPORTED_MODULE_3__["Inertia"].replace(route("events", {
         q: user
       }), {
         preserveScroll: true,
@@ -21289,13 +21308,9 @@ __webpack_require__.r(__webpack_exports__);
         onSuccess: function onSuccess(page) {
           // compruebo si tenemos resultados en caso de no tener muestro el mensaje
           if (page.props.search.length === 0) {
-            console.warn("Paciente no encontrado");
-
             if (_this.notResults.length === 0) {
-              console.log('ahora guardo el mensaje');
-
               _this.notResults.push([{
-                name: "no hay resultados",
+                name: "El usuario no se encuentra registrado en el sistema.",
                 profile_photo_url: "https://cdn.pixabay.com/photo/2015/06/09/16/12/error-803716_960_720.png"
               }]);
             }
@@ -21304,54 +21319,154 @@ __webpack_require__.r(__webpack_exports__);
           }
         }
       });
-      /* Inertia.get('/events', {q: user }, {
-        preserveScroll: true,
-        preserveState: true,
-        replace: true,
-        onSuccess:(page)=>{
-          // compruebo que el array está vacío
-          if(page.props.search.length === 0){
-            console.warn('Paciente no encontrado');
-            return
-          }
-          console.error('Hay pacientes: ', page.props.search[0]);
-        }
-      }); */
-
-      /* if (this.search !== null | this.search === null) {
-        console.warn('Buscando paciente ...');
-        if (this.search.hasOwnProperty("data") && this.search.data.length >= 0) {
-          console.log("Hay coincidencias");
-        }else{
-          console.warn('No hay coincidencias para ',user)
-        }
-      } */
     },
     // Función para el evento clic dentro del calendario
     dayClick: function dayClick(arg) {
-      this.showModal = true; //this.setModalData(arg);
+      this.showModal = true;
+      this.setModalData(arg);
     },
-    //Cargo los datos en el modal reactivo
+    // Cargo los datos en el modal reactivo
     setModalData: function setModalData(dayTime) {
-      this.newEvent.user_id = this.$page.user.id;
-      var dateAndTime = dayTime.dateStr.split("T");
-      this.newEvent.date_at = dateAndTime[0];
-      this.newEvent.hour = dateAndTime[1].substr(0, 8);
+      if (this.$page.user.id !== 1) {
+        this.newEvent.user_id = this.$page.user.id;
+        var dateAndTime = dayTime.dateStr.split("T");
+        this.newEvent.date_at = dateAndTime[0];
+        this.newEvent.hour = dateAndTime[1].substr(0, 8);
+      }
+
       return;
     },
+    // Cerramos el modal
     closeWindow: function closeWindow() {
       this.showModal = false;
       this.newEvent = this.resetModal();
       return;
     },
+    // Reinicio el objeto a sus valores iniciales
     resetModal: function resetModal() {
       return {
+        id: "",
+        title: "",
+        date_at: "",
+        hour: "",
+        user_id: "",
         session: 1800
       };
     },
-    saveAppt: function saveAppt() {},
-    removeAppt: function removeAppt() {},
-    updateAppt: function updateAppt() {}
+    // Guardamos en db el evento
+    saveAppt: function saveAppt(formData) {
+      var _this2 = this;
+
+      if (formData.title === "") {
+        alert("no puedes reservar sin escribir el motivo del tratamiento");
+        return;
+      } // seteo el nuevo objeto con la hora de finalización
+
+
+      var dataAppt = this.setDurationSesion(formData);
+
+      if (!dataAppt) {
+        alert("No hemos podido procesar tu solicitud, inténtalo de nuevo pasados unos minutos");
+      } // Envío la petición al servidor
+
+
+      _inertiajs_inertia__WEBPACK_IMPORTED_MODULE_3__["Inertia"].post(route("appointment.store"), dataAppt, {
+        onSuccess: function onSuccess(page) {
+          if (Object.entries(page.props.errors).length === 0) {
+            _this2.showModal = false;
+            _this2.newEvent = _this2.resetModal();
+            _bus_event_bus__WEBPACK_IMPORTED_MODULE_7__["default"].$emit("refresh");
+          }
+        }
+      }); // Capturo alguna excepción
+
+      _inertiajs_inertia__WEBPACK_IMPORTED_MODULE_3__["Inertia"].on("error", function (event) {
+        event.preventDefault();
+        console.log(event.detail.error);
+      });
+    },
+    // Configuramos el tiempo que dura la sesión
+    setDurationSesion: function setDurationSesion(form) {
+      var dateApptComplete = form.date_at + " " + form.hour;
+      var initSesion = new Date(dateApptComplete);
+      var getSecondsSesion = initSesion.getSeconds() + form.session;
+      initSesion.setSeconds(getSecondsSesion);
+      var isDate = moment__WEBPACK_IMPORTED_MODULE_6___default()(initSesion).isValid();
+
+      if (isDate) {
+        return {
+          id: form.id,
+          title: form.title,
+          start: dateApptComplete,
+          end: Object(_Mixins_transformTime__WEBPACK_IMPORTED_MODULE_5__["default"])(initSesion),
+          session: form.session,
+          user_id: form.user_id
+        };
+      }
+
+      return false;
+    },
+    // Acción a ejecutar trás el clic en un evento existente
+    setEvent: function setEvent(clickInfo) {
+      this.showModal = true;
+      this.isEdit = true;
+      this.loadModal(clickInfo);
+    },
+    // Cargamos los datos del calendario al modal
+    loadModal: function loadModal(obj) {
+      this.newEvent = {
+        id: obj.event.id,
+        title: obj.event.title,
+        date_at: obj.event.startStr.substr(0, 10),
+        hour: obj.event.startStr.substr(11, 8),
+        session: obj.event.extendedProps.session,
+        user_id: obj.event.extendedProps.user_id
+      };
+    },
+    // Actualizamos el evento en DB
+    updateAppt: function updateAppt(obj) {
+      var _this3 = this;
+
+      var copyAppt = _objectSpread({}, this.newEvent);
+
+      var res = this.setDurationSesion(copyAppt);
+      _inertiajs_inertia__WEBPACK_IMPORTED_MODULE_3__["Inertia"].put(route("appointment.update", "".concat(res.id)), res, {
+        preserveScroll: true,
+        preserveState: true,
+        onSuccess: function onSuccess(page) {
+          if (Object.entries(page.props.errors).length === 0) {
+            _this3.showModal = false;
+            _this3.newEvent = _this3.resetModal();
+            _bus_event_bus__WEBPACK_IMPORTED_MODULE_7__["default"].$emit("refresh");
+            return;
+          }
+        }
+      });
+      _inertiajs_inertia__WEBPACK_IMPORTED_MODULE_3__["Inertia"].on("error", function (event) {
+        event.preventDefault();
+        console.log(event.detail.error);
+      });
+    },
+    // Borramos la DB
+    deleteAppt: function deleteAppt(id) {
+      var _this4 = this;
+
+      _inertiajs_inertia__WEBPACK_IMPORTED_MODULE_3__["Inertia"]["delete"](route("appointment.destroy", "".concat(id)), {
+        preserveScroll: true,
+        preserveState: true,
+        onSuccess: function onSuccess(page) {
+          if (Object.entries(page.props.errors).length === 0) {
+            _this4.showModal = false;
+            _this4.newEvent = _this4.resetModal();
+            _bus_event_bus__WEBPACK_IMPORTED_MODULE_7__["default"].$emit("refresh");
+          }
+        }
+      });
+      _inertiajs_inertia__WEBPACK_IMPORTED_MODULE_3__["Inertia"].on("error", function (event) {
+        event.preventDefault();
+        console.log(event.detail.error);
+      });
+    }
   }
 });
 
@@ -22195,24 +22310,12 @@ __webpack_require__.r(__webpack_exports__);
 
 "use strict";
 __webpack_require__.r(__webpack_exports__);
-/* harmony import */ var _fullcalendar_vue__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! @fullcalendar/vue */ "./node_modules/@fullcalendar/vue/dist/main.js");
-/* harmony import */ var _fullcalendar_daygrid__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! @fullcalendar/daygrid */ "./node_modules/@fullcalendar/daygrid/main.js");
-/* harmony import */ var _fullcalendar_interaction__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! @fullcalendar/interaction */ "./node_modules/@fullcalendar/interaction/main.js");
-/* harmony import */ var _fullcalendar_timegrid__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! @fullcalendar/timegrid */ "./node_modules/@fullcalendar/timegrid/main.js");
-/* harmony import */ var _fullcalendar_list__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! @fullcalendar/list */ "./node_modules/@fullcalendar/list/main.js");
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
+/* harmony import */ var _bus_event_bus__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../bus/event-bus */ "./resources/js/bus/event-bus.js");
+/* harmony import */ var _fullcalendar_vue__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! @fullcalendar/vue */ "./node_modules/@fullcalendar/vue/dist/main.js");
+/* harmony import */ var _fullcalendar_daygrid__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! @fullcalendar/daygrid */ "./node_modules/@fullcalendar/daygrid/main.js");
+/* harmony import */ var _fullcalendar_interaction__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! @fullcalendar/interaction */ "./node_modules/@fullcalendar/interaction/main.js");
+/* harmony import */ var _fullcalendar_timegrid__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! @fullcalendar/timegrid */ "./node_modules/@fullcalendar/timegrid/main.js");
+/* harmony import */ var _fullcalendar_list__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! @fullcalendar/list */ "./node_modules/@fullcalendar/list/main.js");
 //
 //
 //
@@ -22224,34 +22327,17 @@ __webpack_require__.r(__webpack_exports__);
 
 
 
-/* 
-import { Inertia } from "@inertiajs/inertia";
-import NormalizeDate from "../Mixins/transformDates";
-import formatTime from "../Mixins/transformTime";
-import moment from "moment"; 
-import Modal from "./Modal";*/
 
 /* harmony default export */ __webpack_exports__["default"] = ({
   name: "Calendar",
   components: {
-    Fullcalendar: _fullcalendar_vue__WEBPACK_IMPORTED_MODULE_0__["default"]
+    Fullcalendar: _fullcalendar_vue__WEBPACK_IMPORTED_MODULE_1__["default"]
   },
   props: {},
   data: function data() {
     return {
-      /* newEvent: {
-        id: "",
-        title: "",
-        date_at: "",
-        hour: "",
-        user_id: "",
-        session: 1800
-      }, */
-
-      /* showModal: false,
-      isEdit: false, */
       calendarOptions: {
-        plugins: [_fullcalendar_daygrid__WEBPACK_IMPORTED_MODULE_1__["default"], _fullcalendar_interaction__WEBPACK_IMPORTED_MODULE_2__["default"], _fullcalendar_timegrid__WEBPACK_IMPORTED_MODULE_3__["default"], _fullcalendar_list__WEBPACK_IMPORTED_MODULE_4__["default"]],
+        plugins: [_fullcalendar_daygrid__WEBPACK_IMPORTED_MODULE_2__["default"], _fullcalendar_interaction__WEBPACK_IMPORTED_MODULE_3__["default"], _fullcalendar_timegrid__WEBPACK_IMPORTED_MODULE_4__["default"], _fullcalendar_list__WEBPACK_IMPORTED_MODULE_5__["default"]],
         headerToolbar: {
           left: "prev next today",
           center: "title",
@@ -22285,6 +22371,7 @@ import Modal from "./Modal";*/
         // private events
         color: "#1ABC9C",
         failure: function failure(error) {
+          // Si sucede algo inesperado lo mostramos por consola
           console.log('mostrando errores: ', error.message);
         }
       }];
@@ -22292,148 +22379,32 @@ import Modal from "./Modal";*/
   },
   mounted: function mounted() {
     this.getCalendarApi();
+    _bus_event_bus__WEBPACK_IMPORTED_MODULE_0__["default"].$on('refresh', function () {
+      this.refreshCalendar();
+    }.bind(this));
   },
   methods: {
-    getUser: function getUser(input) {
-      console.log('estoy en calendar: ', input);
-    },
     // Recupero los eventos de la DB
     getCalendarApi: function getCalendarApi() {
       this.calendarEl = this.$refs.fullCalendar.getApi();
     },
     // Función para el evento clic dentro del calendario
     handleDateClick: function handleDateClick(arg) {
-      this.$emit('openModal', arg); //this.setModalData(arg);
-    }
-    /*Cargo los datos en el modal reactivo
-    setModalData(dayTime) {
-      this.newEvent.user_id = this.$page.user.id;
-      let dateAndTime = dayTime.dateStr.split("T");
-      this.newEvent.date_at = dateAndTime[0];
-      this.newEvent.hour = dateAndTime[1].substr(0, 8);
-      return;
+      this.$emit('openModal', arg);
     },
     // Cierro el modal
-    closeWindow() {
+    closeWindow: function closeWindow() {
       this.showModal = false;
       this.newEvent = this.resetModal();
     },
-    refreshCalendar() {
-      this.calendarEl.refetchEvents()
+    // Hacemos que se ejecute el metodo interno de fullCalendar eventSource
+    refreshCalendar: function refreshCalendar() {
+      this.calendarEl.refetchEvents();
     },
-    // guardo el evento en DB
-    saveAppt(formData) {
-      if (formData.title === "") {
-        alert("no puedes reservar sin escribir el motivo del tratamiento");
-        return;
-      }
-      // seteo el nuevo objeto con la hora de finalización
-      let dataAppt = this.setDurationSesion(formData);
-      if (!dataAppt) {
-        alert(
-          "No hemos podido procesar tu solicitud, inténtalo de nuevo pasados unos minutos"
-        );
-      }
-       // Envío la petición al servidor
-      Inertia.post(route("appointment.store"), dataAppt, {
-        onSuccess: page => {
-          if (Object.entries(page.props.errors).length === 0) {
-            console.log(page);
-            this.showModal = false;
-            this.newEvent = this.resetModal();
-            this.refreshCalendar();
-          }
-        }
-      });
-      // Capturo alguna excepción
-      Inertia.on("error", event => {
-        event.preventDefault();
-        console.log(event.detail.error);
-      });
-    },
-    handleEventClick(clickInfo) {
-      this.showModal = true;
-      this.isEdit = true;
-      this.loadModal(clickInfo);
-    },
-    setDurationSesion(form) {
-      let dateApptComplete = form.date_at + " " + form.hour;
-      let initSesion = new Date(dateApptComplete);
-      let getSecondsSesion = initSesion.getSeconds() + form.session;
-      initSesion.setSeconds(getSecondsSesion);
-       let isDate = moment(initSesion).isValid();
-       if (isDate) {
-        return {
-          id: form.id,
-          title: form.title,
-          start: dateApptComplete,
-          end: formatTime(initSesion),
-          session: form.session,
-          user_id: form.user_id
-        };
-      }
-      return false;
-    },
-    loadModal(obj) {
-      this.newEvent = {
-        id: obj.event.id,
-        title: obj.event.title,
-        date_at: obj.event.startStr.substr(0, 10),
-        hour: obj.event.startStr.substr(11, 8),
-        session: obj.event.extendedProps.session,
-        user_id: obj.event.extendedProps.user_id
-      };
-    },
-    resetModal() {
-      return {
-        id: "",
-        title: "",
-        date_at: "",
-        hour: "",
-        session: 1800,
-        user_id: ""
-      };
-    },
-    removeAppt(id) {
-      Inertia.delete(route("appointment.destroy", `${id}`), {
-        preserveScroll: true,
-        preserveState: true,
-        onSuccess: page => {
-          if (Object.entries(page.props.errors).length === 0) {
-            this.showModal = false;
-            this.newEvent = this.resetModal();
-            let calendarApi = this.$refs.fullCalendar.getApi();
-            let event = calendarApi.getEventById(id);
-            event.remove();
-          }
-        }
-      });
-      Inertia.on("error", event => {
-        event.preventDefault();
-        console.log(event.detail.error);
-      });
-    },
-    // Actualizar Evento
-    updateAppt(obj) {
-      const copyAppt = { ...this.newEvent };
-      let res = this.setDurationSesion(copyAppt);
-       Inertia.put(route("appointment.update", `${res.id}`), res, {
-        preserveScroll: true,
-        preserveState: true,
-        onSuccess: page => {
-          if (Object.entries(page.props.errors).length === 0) {
-            this.showModal = false;
-            this.newEvent = this.resetModal();
-          }
-          this.refreshCalendar();
-        }
-      });
-      Inertia.on("error", event => {
-        event.preventDefault();
-        console.log(event.detail.error);
-      });
-    }*/
-
+    // Acción del click sobre un evento
+    handleEventClick: function handleEventClick(clickInfo) {
+      this.$emit('handleEventClick', clickInfo);
+    }
   }
 });
 
@@ -22618,6 +22589,18 @@ __webpack_require__.r(__webpack_exports__);
 //
 //
 //
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
 
 
 /* harmony default export */ __webpack_exports__["default"] = ({
@@ -22627,7 +22610,10 @@ __webpack_require__.r(__webpack_exports__);
   },
   props: {
     errors: Object,
-    editMode: Boolean,
+    editMode: {
+      type: Boolean,
+      "default": false
+    },
     form: {
       type: Object,
       "default": function _default() {}
@@ -22651,6 +22637,9 @@ __webpack_require__.r(__webpack_exports__);
     getActionBtnLabel: function getActionBtnLabel() {
       return this.form.id !== "" ? "Actualizar" : "Reservar";
     },
+    setTitle: function setTitle() {
+      return this.editMode ? "Modificar evento" : "Reservar evento";
+    },
     isSearching: function isSearching() {
       return this.searching;
     }
@@ -22662,13 +22651,7 @@ __webpack_require__.r(__webpack_exports__);
     selectedUser: function selectedUser(user) {
       this.term = user.name;
       this.searching = false;
-
-      if (this.$page.user.id === 2) {
-        this.form.user_id = user.id;
-        return;
-      }
-
-      this.form.user_id = this.$page.user.id;
+      this.form.user_id = user.id;
     },
     getUser: function getUser() {
       if (this.term !== "") {
@@ -22689,7 +22672,7 @@ __webpack_require__.r(__webpack_exports__);
       }
     },
     deleteTo: function deleteTo(item) {
-      this.$emit("deleteApt", item.id);
+      this.$emit("removeApt", item.id);
     }
   }
 });
@@ -67469,35 +67452,30 @@ var render = function() {
                                             "flex w-full rounded-md shadow-sm sm:ml-3 sm:w-auto"
                                         },
                                         [
-                                          _c(
-                                            "button",
-                                            {
-                                              directives: [
+                                          !_vm.editMode
+                                            ? _c(
+                                                "button",
                                                 {
-                                                  name: "show",
-                                                  rawName: "v-show",
-                                                  value: !_vm.editMode,
-                                                  expression: "!editMode"
-                                                }
-                                              ],
-                                              staticClass:
-                                                "inline-flex justify-center w-full rounded-md border border-transparent px-4 py-2 bg-green-600 text-base leading-6 font-medium text-white shadow-sm hover:bg-green-500 focus:outline-none focus:border-green-700 focus:shadow-outline-green transition ease-in-out duration-150 sm:text-sm sm:leading-5",
-                                              attrs: {
-                                                "wire:click.prevent": "store()",
-                                                type: "button"
-                                              },
-                                              on: {
-                                                click: function($event) {
-                                                  return _vm.save(_vm.data)
-                                                }
-                                              }
-                                            },
-                                            [
-                                              _vm._v(
-                                                "\n                        Save\n                      "
+                                                  staticClass:
+                                                    "inline-flex justify-center w-full rounded-md border border-transparent px-4 py-2 bg-green-600 text-base leading-6 font-medium text-white shadow-sm hover:bg-green-500 focus:outline-none focus:border-green-700 focus:shadow-outline-green transition ease-in-out duration-150 sm:text-sm sm:leading-5",
+                                                  attrs: {
+                                                    "wire:click.prevent":
+                                                      "store()",
+                                                    type: "button"
+                                                  },
+                                                  on: {
+                                                    click: function($event) {
+                                                      return _vm.save(_vm.data)
+                                                    }
+                                                  }
+                                                },
+                                                [
+                                                  _vm._v(
+                                                    "\n                        Save\n                      "
+                                                  )
+                                                ]
                                               )
-                                            ]
-                                          )
+                                            : _vm._e()
                                         ]
                                       ),
                                       _vm._v(" "),
@@ -67623,7 +67601,7 @@ var render = function() {
                   staticClass:
                     "font-semibold text-xl text-gray-800 leading-tight"
                 },
-                [_vm._v("Calendar " + _vm._s(_vm.allUsers))]
+                [_vm._v("Calendar")]
               )
             ]
           },
@@ -67638,28 +67616,39 @@ var render = function() {
           _c(
             "div",
             { staticClass: "bg-white overflow-hidden shadow-xl sm:rounded-lg" },
-            [_c("Calendar", { on: { openModal: _vm.dayClick } })],
+            [
+              _c("Calendar", {
+                on: { openModal: _vm.dayClick, handleEventClick: _vm.setEvent }
+              })
+            ],
             1
           )
         ])
       ]),
       _vm._v(" "),
-      _vm.showModal
-        ? _c("Modal", {
-            attrs: {
-              users: _vm.allUsers,
-              form: _vm.newEvent,
-              "edit-mode": _vm.isEdit
-            },
-            on: {
-              searchUser: _vm.searchUserDB,
-              closeModal: _vm.closeWindow,
-              saveAppt: _vm.saveAppt,
-              deleteApt: _vm.removeAppt,
-              editAppt: _vm.updateAppt
-            }
-          })
-        : _vm._e()
+      _c(
+        "transition",
+        { attrs: { name: "fade" } },
+        [
+          _vm.showModal
+            ? _c("Modal", {
+                attrs: {
+                  users: _vm.allUsers,
+                  form: _vm.newEvent,
+                  "edit-mode": _vm.isEdit
+                },
+                on: {
+                  searchUser: _vm.searchUserDB,
+                  closeModal: _vm.closeWindow,
+                  saveAppt: _vm.saveAppt,
+                  editAppt: _vm.updateAppt,
+                  removeApt: _vm.deleteAppt
+                }
+              })
+            : _vm._e()
+        ],
+        1
+      )
     ],
     1
   )
@@ -69024,22 +69013,45 @@ var render = function() {
               _c("form", [
                 _c(
                   "div",
+                  {
+                    staticClass:
+                      "flex justify-between border-b border-gray-100 px-5 py-4"
+                  },
+                  [
+                    _c("div", [
+                      _c("i", {
+                        staticClass: "fas fa-exclamation-circle text-blue-500"
+                      }),
+                      _vm._v(" "),
+                      _c(
+                        "span",
+                        { staticClass: "font-bold text-gray-700 text-lg" },
+                        [_vm._v(_vm._s(_vm.setTitle))]
+                      )
+                    ]),
+                    _vm._v(" "),
+                    _vm._m(1)
+                  ]
+                ),
+                _vm._v(" "),
+                _c(
+                  "div",
                   { staticClass: "bg-white px-4 pt-5 pb-4 sm:p-6 sm:pb-4" },
                   [
                     _c("div", {}, [
-                      _c("div", { staticClass: "mb-4" }, [
-                        _c(
-                          "label",
-                          {
-                            staticClass:
-                              "block text-gray-700 text-sm font-bold mb-2",
-                            attrs: { for: "exampleFormControlInput1" }
-                          },
-                          [_vm._v("Buscar Paciente")]
-                        ),
-                        _vm._v(" "),
-                        _vm.isAdmin
-                          ? _c(
+                      _vm.isAdmin
+                        ? _c("div", { staticClass: "mb-4" }, [
+                            _c(
+                              "label",
+                              {
+                                staticClass:
+                                  "block text-gray-700 text-sm font-bold mb-2",
+                                attrs: { for: "exampleFormControlInput1" }
+                              },
+                              [_vm._v("Buscar Paciente")]
+                            ),
+                            _vm._v(" "),
+                            _c(
                               "div",
                               { staticClass: "flex flex-col relative" },
                               [
@@ -69072,7 +69084,6 @@ var render = function() {
                                         domProps: { value: _vm.term },
                                         on: {
                                           keyup: _vm.getUser,
-                                          blur: _vm.closeList,
                                           input: function($event) {
                                             if ($event.target.composing) {
                                               return
@@ -69155,8 +69166,8 @@ var render = function() {
                                 )
                               ]
                             )
-                          : _vm._e()
-                      ]),
+                          ])
+                        : _vm._e(),
                       _vm._v(" "),
                       _c("div", { staticClass: "mb-4" }, [
                         _c(
@@ -69329,16 +69340,16 @@ var render = function() {
                             }
                           },
                           [
+                            _c("option", { attrs: { value: "900" } }, [
+                              _vm._v("15 minutos")
+                            ]),
+                            _vm._v(" "),
                             _c("option", { attrs: { value: "1800" } }, [
-                              _vm._v("30 minutes")
+                              _vm._v("30 minutos")
                             ]),
                             _vm._v(" "),
                             _c("option", { attrs: { value: "3600" } }, [
-                              _vm._v("1 hour")
-                            ]),
-                            _vm._v(" "),
-                            _c("option", { attrs: { value: "900" } }, [
-                              _vm._v("3/4 hour")
+                              _vm._v("1 hora")
                             ])
                           ]
                         )
@@ -69447,6 +69458,19 @@ var staticRenderFns = [
     var _c = _vm._self._c || _h
     return _c("div", { staticClass: "fixed inset-0 transition-opacity" }, [
       _c("div", { staticClass: "absolute inset-0 bg-gray-500 opacity-75" })
+    ])
+  },
+  function() {
+    var _vm = this
+    var _h = _vm.$createElement
+    var _c = _vm._self._c || _h
+    return _c("div", [
+      _c("button", [
+        _c("i", {
+          staticClass:
+            "fa fa-times-circle text-red-500 hover:text-red-600 transition duration-150"
+        })
+      ])
     ])
   }
 ]
@@ -84149,6 +84173,23 @@ new vue__WEBPACK_IMPORTED_MODULE_0___default.a({
 window._ = __webpack_require__(/*! lodash */ "./node_modules/lodash/lodash.js");
 window.axios = __webpack_require__(/*! axios */ "./node_modules/axios/index.js");
 window.axios.defaults.headers.common['X-Requested-With'] = 'XMLHttpRequest';
+
+/***/ }),
+
+/***/ "./resources/js/bus/event-bus.js":
+/*!***************************************!*\
+  !*** ./resources/js/bus/event-bus.js ***!
+  \***************************************/
+/*! exports provided: default */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony import */ var vue__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! vue */ "./node_modules/vue/dist/vue.common.js");
+/* harmony import */ var vue__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(vue__WEBPACK_IMPORTED_MODULE_0__);
+
+var EventBus = new vue__WEBPACK_IMPORTED_MODULE_0___default.a();
+/* harmony default export */ __webpack_exports__["default"] = (EventBus);
 
 /***/ }),
 

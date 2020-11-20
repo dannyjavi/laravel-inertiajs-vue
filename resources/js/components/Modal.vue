@@ -15,22 +15,34 @@
         aria-labelledby="modal-headline"
       >
         <form>
+          <div class="flex justify-between border-b border-gray-100 px-5 py-4">
+            <div>
+              <i class="fas fa-exclamation-circle text-blue-500"></i>
+              <span class="font-bold text-gray-700 text-lg">{{ setTitle }}</span>
+            </div>
+            <div>
+              <button>
+                <i
+                  class="fa fa-times-circle text-red-500 hover:text-red-600 transition duration-150"
+                ></i>
+              </button>
+            </div>
+          </div>
           <div class="bg-white px-4 pt-5 pb-4 sm:p-6 sm:pb-4">
             <div class>
-              <div class="mb-4">
+              <div v-if="isAdmin" class="mb-4">
                 <label
                   for="exampleFormControlInput1"
                   class="block text-gray-700 text-sm font-bold mb-2"
                 >Buscar Paciente</label>
                 <!-- Buscador way -->
-                <div class="flex flex-col relative" v-if="isAdmin">
+                <div class="flex flex-col relative">
                   <div class="w-full">
                     <div class="my-2 p-1 bg-white flex border border-gray-200 rounded">
                       <div class="flex flex-auto flex-wrap"></div>
                       <input
                         v-model="term"
                         @keyup="getUser"
-                        @blur="closeList"
                         placeholder="Buscar paciente"
                         class="p-1 px-2 appearance-none outline-none w-full text-gray-800"
                       />
@@ -126,9 +138,9 @@
                   id="timeSesion"
                   class="mt-1 block form-select w-full py-2 px-3 border border-gray-300 bg-white rounded-md shadow-sm focus:outline-none focus:shadow-outline-blue focus:border-blue-300 transition duration-150 ease-in-out sm:text-sm sm:leading-5"
                 >
-                  <option value="1800">30 minutes</option>
-                  <option value="3600">1 hour</option>
-                  <option value="900">3/4 hour</option>
+                  <option value="900">15 minutos</option>
+                  <option value="1800">30 minutos</option>
+                  <option value="3600">1 hora</option>
                 </select>
               </div>
               <!-- end select -->
@@ -176,7 +188,10 @@ export default {
   },
   props: {
     errors: Object,
-    editMode: Boolean,
+    editMode: {
+      type: Boolean,
+      default: false
+    },
     form: {
       type: Object,
       default: () => {}
@@ -200,23 +215,21 @@ export default {
     getActionBtnLabel() {
       return this.form.id !== "" ? "Actualizar" : "Reservar";
     },
+    setTitle() {
+      return this.editMode ? "Modificar evento" : "Reservar evento";
+    },
     isSearching() {
       return this.searching;
     }
   },
   methods: {
     closeList() {
-      return this.searching = !this.searching
+      return (this.searching = !this.searching);
     },
     selectedUser(user) {
       this.term = user.name;
       this.searching = false;
-
-      if (this.$page.user.id === 2) {
-        this.form.user_id = user.id;
-        return;
-      }
-      this.form.user_id = this.$page.user.id;
+      this.form.user_id = user.id;
     },
     getUser() {
       if (this.term !== "") {
@@ -235,7 +248,7 @@ export default {
       }
     },
     deleteTo(item) {
-      this.$emit("deleteApt", item.id);
+      this.$emit("removeApt", item.id);
     }
   }
 };

@@ -39,15 +39,11 @@ class UserController extends Controller
      *
      * @return Response
      */
-    public function update(Request $request)
-    {
-        Validator::make($request->all(), [
-            'name' => ['required'],
-            'email' => ['required'],
-        ])->validate();
-  
+    public function update(StoreUserForm $request)
+    {  
         if ($request->has('id')) {
             User::find($request->input('id'))->update($request->all());
+
             return redirect()
                     ->back()
                     ->with('message', 'Usuario modificado correctamente');
@@ -59,14 +55,19 @@ class UserController extends Controller
      *
      * @return Response
      */
-    public function destroy(Request $request)
+    public function destroy(User $user)
     {
-        if ($request->has('id')) {
-            User::find($request->id)->delete();
+        try {
+            $find = User::findOrFail($user->id);
+
+            $find->delete();
+            
             return redirect()
                 ->back()
-                ->with('message', 'Paciente creado!!');
-
-        }
+                ->with('message', 'Paciente eliminado!!');
+        } catch (\Throwable $th) {
+            return redirect()->back()->with('message', 'No se puede borrar el usuario intentalo mas tarde');
+        }        
+        
     }
 }

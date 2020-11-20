@@ -357,6 +357,6 @@ export default {
     path() {
       return window.location.pathname;
     }
-  }
+  },
 };
 </script>

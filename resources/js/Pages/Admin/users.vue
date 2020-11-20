@@ -166,7 +166,7 @@
                           wire:click.prevent="store()"
                           type="button"
                           class="inline-flex justify-center w-full rounded-md border border-transparent px-4 py-2 bg-green-600 text-base leading-6 font-medium text-white shadow-sm hover:bg-green-500 focus:outline-none focus:border-green-700 focus:shadow-outline-green transition ease-in-out duration-150 sm:text-sm sm:leading-5"
-                          v-show="!editMode"
+                          v-if="!editMode"
                           @click="save(data)"
                         >
                           Save
@@ -252,9 +252,9 @@ export default {
         }
       });
       Inertia.on("error", event => {
-        console.log("tenemos errores: ", event.detail.error);
+        console.log("errores detectados: ", event.detail.error);
         event.preventDefault();
-        // Handle the error yourself
+        // podemos manejar los errores como queramos
       });
     },
     reset() {
@@ -263,33 +263,40 @@ export default {
         email: null
       };
     },
-    /* submit(){
-      let res = this.$inertia.post(this.url, this.form)
-
-      console.log(res);
-    }, */
-    editForm(data) {
+    edit(data) {
       this.form = Object.assign({}, data);
       this.editMode = true;
       this.openModal();
     },
     update(data) {
-      /* data._method = "PUT"
-      this.$inertia.post("/users/" + data.id, data)
-      this.reset()
-      this.closeModal()*/
-      data._method = "PUT";
-      Inertia.post(this.url + `/${data.id}`, data, {
-        onFinish: () => {
-          this.reset();
-          this.isOpen = false;
+      Inertia.put(this.url + `/${data.id}`, data, {
+         onSuccess: page => {
+          if (Object.entries(page.props.errors).length === 0) {
+            this.isOpen = false;
+            this.reset();
+            return
+          }
         }
+      });
+      Inertia.on("error", event => {
+        event.preventDefault();
+        console.log(event.detail.error);
       });
     },
     deleteRow(data) {
-      if (!confirm("Are you sure want to remove?")) return;
-      data._method = "DELETE";
-      this.$inertia.post("/users/" + data.id, data);
+      console.log(data);
+      if (!confirm("Estas seguro de borrar este elemento?")) return;
+
+      Inertia.delete(`/users/${data.id}`,{
+         onSuccess: page => {
+          if (Object.entries(page.props.errors).length === 0) {
+            this.isOpen = false;
+          }
+        }
+      })      
+      Inertia.on("error", event => {
+        console.log('Corregir: ',event.detail.error);
+      });
       this.reset();
       this.closeModal();
     }

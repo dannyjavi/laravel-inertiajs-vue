@@ -1,39 +1,45 @@
 <template>
   <app-layout @blur="closeWindow">
     <template #header>
-      <h2 class="font-semibold text-xl text-gray-800 leading-tight">Calendar {{ allUsers }}</h2>
+      <h2 class="font-semibold text-xl text-gray-800 leading-tight">Calendar</h2>
     </template>
     <div class="py-12">
       <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
         <div class="bg-white overflow-hidden shadow-xl sm:rounded-lg">
-          <Calendar @openModal="dayClick" />
+          <Calendar @openModal="dayClick" @handleEventClick="setEvent" />
         </div>
       </div>
     </div>
-    <Modal
-      v-if="showModal"
-      :users="allUsers"
-      :form="newEvent"
-      :edit-mode="isEdit"
-      @searchUser="searchUserDB"
-      @closeModal="closeWindow"
-      @saveAppt="saveAppt"
-      @deleteApt="removeAppt"
-      @editAppt="updateAppt"
-    />
+    <transition name="fade">
+      <Modal
+        v-if="showModal"
+        :users="allUsers"
+        :form="newEvent"
+        :edit-mode="isEdit"
+        @searchUser="searchUserDB"
+        @closeModal="closeWindow"
+        @saveAppt="saveAppt"
+        @editAppt="updateAppt"
+        @removeApt="deleteAppt"
+      />
+    </transition>
   </app-layout>
 </template>
 
 <script>
+/* Componentes */
+import Modal from "../../components/Modal";
 import Calendar from "../../components/Calendar";
 import AppLayout from "@/Layouts/AppLayout";
+
 /* librerias */
 import { Inertia } from "@inertiajs/inertia";
 import NormalizeDate from "../../Mixins/transformDates";
 import formatTime from "../../Mixins/transformTime";
 import moment from "moment";
 
-import Modal from "../../components/Modal";
+//import del bus para comunicación entre eventos
+import EventBus from "../../bus/event-bus";
 
 export default {
   name: "Books",
@@ -62,7 +68,6 @@ export default {
   },
   computed: {
     allUsers() {
-      console.warn('midiendo largo: ',this.notResults.length);
       if (this.notResults.length === 1 && this.search.length === 0) {
         return this.notResults;
       }
@@ -71,8 +76,6 @@ export default {
   },
   methods: {
     searchUserDB(user) {
-      if (this.search === "") console.log("Buscar paciente");
-
       Inertia.replace(route("events", { q: user }), {
         preserveScroll: true,
         preserveState: true,
@@ -80,72 +83,164 @@ export default {
         onSuccess: page => {
           // compruebo si tenemos resultados en caso de no tener muestro el mensaje
           if (page.props.search.length === 0) {
-            console.warn("Paciente no encontrado");
-            if(this.notResults.length === 0){
-              console.log('ahora guardo el mensaje');
+            if (this.notResults.length === 0) {
               this.notResults.push([
-              {
-                name: "no hay resultados",
-                profile_photo_url:
-                  "https://cdn.pixabay.com/photo/2015/06/09/16/12/error-803716_960_720.png"
-              }])
+                {
+                  name: "El usuario no se encuentra registrado en el sistema.",
+                  profile_photo_url:
+                    "https://cdn.pixabay.com/photo/2015/06/09/16/12/error-803716_960_720.png"
+                }
+              ]);
             }
             return;
           }
         }
       });
-      /* Inertia.get('/events', {q: user }, {
-        preserveScroll: true,
-        preserveState: true,
-        replace: true,
-        onSuccess:(page)=>{
-          // compruebo que el array está vacío
-          if(page.props.search.length === 0){
-            console.warn('Paciente no encontrado');
-            return
-          }
-          console.error('Hay pacientes: ', page.props.search[0]);
-        }
-      }); */
-
-      /* if (this.search !== null | this.search === null) {
-        console.warn('Buscando paciente ...');
-        if (this.search.hasOwnProperty("data") && this.search.data.length >= 0) {
-          console.log("Hay coincidencias");
-        }else{
-          console.warn('No hay coincidencias para ',user)
-        }
-      } */
     },
     // Función para el evento clic dentro del calendario
     dayClick(arg) {
       this.showModal = true;
-      //this.setModalData(arg);
+      this.setModalData(arg);
     },
-    //Cargo los datos en el modal reactivo
+    // Cargo los datos en el modal reactivo
     setModalData(dayTime) {
-      this.newEvent.user_id = this.$page.user.id;
-      let dateAndTime = dayTime.dateStr.split("T");
-      this.newEvent.date_at = dateAndTime[0];
-      this.newEvent.hour = dateAndTime[1].substr(0, 8);
+      if (this.$page.user.id !== 1) {
+        this.newEvent.user_id = this.$page.user.id;
+
+        let dateAndTime = dayTime.dateStr.split("T");
+        this.newEvent.date_at = dateAndTime[0];
+        this.newEvent.hour = dateAndTime[1].substr(0, 8);
+      }
       return;
     },
+    // Cerramos el modal
     closeWindow() {
       this.showModal = false;
       this.newEvent = this.resetModal();
       return;
     },
+    // Reinicio el objeto a sus valores iniciales
     resetModal() {
       return {
+        id: "",
+        title: "",
+        date_at: "",
+        hour: "",
+        user_id: "",
         session: 1800
       };
     },
-    saveAppt() {},
-    removeAppt() {},
-    updateAppt() {}
+    // Guardamos en db el evento
+    saveAppt(formData) {
+      if (formData.title === "") {
+        alert("no puedes reservar sin escribir el motivo del tratamiento");
+        return;
+      }
+      // seteo el nuevo objeto con la hora de finalización
+      let dataAppt = this.setDurationSesion(formData);
+      if (!dataAppt) {
+        alert(
+          "No hemos podido procesar tu solicitud, inténtalo de nuevo pasados unos minutos"
+        );
+      }
+      // Envío la petición al servidor
+      Inertia.post(route("appointment.store"), dataAppt, {
+        onSuccess: page => {
+          if (Object.entries(page.props.errors).length === 0) {
+            this.showModal = false;
+            this.newEvent = this.resetModal();
+            EventBus.$emit("refresh");
+          }
+        }
+      });
+      // Capturo alguna excepción
+      Inertia.on("error", event => {
+        event.preventDefault();
+        console.log(event.detail.error);
+      });
+    },
+    // Configuramos el tiempo que dura la sesión
+    setDurationSesion(form) {
+      let dateApptComplete = form.date_at + " " + form.hour;
+      let initSesion = new Date(dateApptComplete);
+      let getSecondsSesion = initSesion.getSeconds() + form.session;
+      initSesion.setSeconds(getSecondsSesion);
+
+      let isDate = moment(initSesion).isValid();
+
+      if (isDate) {
+        return {
+          id: form.id,
+          title: form.title,
+          start: dateApptComplete,
+          end: formatTime(initSesion),
+          session: form.session,
+          user_id: form.user_id
+        };
+      }
+      return false;
+    },
+    // Acción a ejecutar trás el clic en un evento existente
+    setEvent(clickInfo) {
+      this.showModal = true;
+      this.isEdit = true;
+      this.loadModal(clickInfo);
+    },
+    // Cargamos los datos del calendario al modal
+    loadModal(obj) {
+      this.newEvent = {
+        id: obj.event.id,
+        title: obj.event.title,
+        date_at: obj.event.startStr.substr(0, 10),
+        hour: obj.event.startStr.substr(11, 8),
+        session: obj.event.extendedProps.session,
+        user_id: obj.event.extendedProps.user_id
+      };
+    },
+    // Actualizamos el evento en DB
+    updateAppt(obj) {
+      const copyAppt = { ...this.newEvent };
+      let res = this.setDurationSesion(copyAppt);
+
+      Inertia.put(route("appointment.update", `${res.id}`), res, {
+        preserveScroll: true,
+        preserveState: true,
+        onSuccess: page => {
+          if (Object.entries(page.props.errors).length === 0) {
+            this.showModal = false;
+            this.newEvent = this.resetModal();
+            EventBus.$emit("refresh");
+            return;
+          }
+        }
+      });
+      Inertia.on("error", event => {
+        event.preventDefault();
+        console.log(event.detail.error);
+      });
+    },
+    // Borramos la DB
+    deleteAppt(id) {
+      Inertia.delete(route("appointment.destroy", `${id}`), {
+        preserveScroll: true,
+        preserveState: true,
+        onSuccess: page => {
+          if (Object.entries(page.props.errors).length === 0) {
+            this.showModal = false;
+            this.newEvent = this.resetModal();
+            EventBus.$emit("refresh");
+          }
+        }
+      });
+      Inertia.on("error", event => {
+        event.preventDefault();
+        console.log(event.detail.error);
+      });
+    }
   }
 };
 </script>
 
 <style>
+
 </style>
