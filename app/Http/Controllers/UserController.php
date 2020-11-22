@@ -20,13 +20,29 @@ class UserController extends Controller
      */
     public function index()
     {
-        $id = Auth::id();
-        if($id === 1){
+        $profile = Auth::user()->isAdmin;
+
+        if($profile){
             return Inertia::render('Admin/users', ['userList' => User::paginate()]);
         }
         return Inertia::render('Agenda/Books');
 
-    }  
+    }
+
+    /**
+     * Display the specified resource.
+     *
+     * @param  \App\Models\Product  $product
+     * @return \Illuminate\Http\Response
+     */
+    public function view($id)
+    {
+        $find = User::query()->select('name')
+                ->where('id', $id)
+                ->get();
+
+        return response()->json($find);
+    }
     
     /**
      * Show the form for creating a new resource.

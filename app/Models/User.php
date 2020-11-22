@@ -16,17 +16,17 @@ class User extends Authenticatable
     use HasProfilePhoto;
     use Notifiable;
     use TwoFactorAuthenticatable;
-
+   
     /**
      * The attributes that are mass assignable.
      *
      * @var array
      */
     protected $fillable = [
-        'id',
         'name',
         'email',
         'password',
+        'isAdmin'
     ];
 
     /**

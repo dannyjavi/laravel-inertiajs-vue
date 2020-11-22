@@ -3,6 +3,7 @@
 namespace Laravel\Fortify\Actions;
 
 use Illuminate\Contracts\Auth\StatefulGuard;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Validation\ValidationException;
 use Laravel\Fortify\Fortify;
 use Laravel\Fortify\LoginRateLimiter;
@@ -53,6 +54,14 @@ class AttemptToAuthenticate
             $request->only(Fortify::username(), 'password'),
             $request->filled('remember'))
         ) {
+            //if (Auth::user()->atributo de la tabla que queramos comparar
+            if(Auth::user()->email === 'admin@admin.es'){
+                session(['isAdmin'=> true]);
+
+                return redirect()->route('users.index');
+            }else {
+                session(['isAdmin' => false]);
+            }
             return $next($request);
         }
 

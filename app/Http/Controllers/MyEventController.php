@@ -22,9 +22,9 @@ class MyEventController extends Controller
      */
     public function __invoke()
     {
-        $user = Auth::user();
+        $user = Auth::user()->isAdmin;
 
-        if($user->email === 'd@d.es'){
+        if($user){
             $memories = MyEvent::get(['title','start','end']);
             return response()->json($memories);
         }

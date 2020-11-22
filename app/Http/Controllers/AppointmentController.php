@@ -16,9 +16,11 @@ class AppointmentController extends Controller
 
     protected $apt;
 
-    public function __construct(Appointment $appointment) {
+    public function __construct(Appointment $appointment)
+    {
         $this->apt = $appointment;
     }
+    
     /**
      * Display a listing of the resource.
      *
@@ -26,21 +28,9 @@ class AppointmentController extends Controller
      */
     public function index()
     {
-        $events = $this->apt::orderBy('end', 'asc')->get();
+        $events = $this->apt::select('id', 'title', 'start', 'end', 'status', 'session', 'color', 'user_id')->orderBy('end', 'asc')->get();
 
-        return response()->json($events);  
-    }
-
-    /**
-     * Show the form for creating a new resource.
-     *
-     * @return \Illuminate\Http\Response
-     */
-    public function show(Request $request)
-    {
-        return Inertia::render('Agenda/Books',[
-            'search' => 'hola #'.$request->term
-        ]);
+        return response()->json($events);
     }
 
     /**
@@ -52,24 +42,24 @@ class AppointmentController extends Controller
     public function store(AppointmentRequest $request)
     {
         // Retrieve the validated input data...
-        if($request->has('session') == 1800){
+        if ($request->has('session') == 1800) {
             $request->price = 30;
         }
-        
-        if($request->has('session') == 3600){
+
+        if ($request->has('session') == 3600) {
             $request->price = 45;
         }
-        
+
         Appointment::create([
-            'title'=> $request->title,
+            'title' => $request->title,
             'start' => $request->start,
             'end' => $request->end,
             'session' => $request->session,
             'price' => $request->price,
             'user_id' => Auth::id()
         ]);
-        
-        return redirect()->back()->with('message','Cita creada con éxito');
+
+        return redirect()->back()->with('message', 'Cita creada con éxito');
     }
 
     /**
@@ -98,7 +88,7 @@ class AppointmentController extends Controller
     public function destroy(Appointment $appointment)
     {
         $appointment->delete();
-        
-        return redirect()->back()->with('message','Cita borrada con éxito');
+
+        return redirect()->back()->with('message', 'Cita borrada con éxito');
     }
 }

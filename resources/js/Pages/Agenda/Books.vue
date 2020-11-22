@@ -13,6 +13,7 @@
     <transition name="fade">
       <Modal
         v-if="showModal"
+        :userApt="getTerm"
         :users="allUsers"
         :form="newEvent"
         :edit-mode="isEdit"
@@ -55,6 +56,7 @@ export default {
     return {
       showModal: false,
       isEdit: false,
+      userEvent: "",
       newEvent: {
         id: "",
         title: "",
@@ -72,6 +74,9 @@ export default {
         return this.notResults;
       }
       return this.search;
+    },
+    getTerm() {
+      return this.userEvent;
     }
   },
   methods: {
@@ -104,13 +109,13 @@ export default {
     },
     // Cargo los datos en el modal reactivo
     setModalData(dayTime) {
-      if (this.$page.user.id !== 1) {
+      if (this.$page.user.isAdmin) {
         this.newEvent.user_id = this.$page.user.id;
-
-        let dateAndTime = dayTime.dateStr.split("T");
-        this.newEvent.date_at = dateAndTime[0];
-        this.newEvent.hour = dateAndTime[1].substr(0, 8);
       }
+
+      let dateAndTime = dayTime.dateStr.split("T");
+      this.newEvent.date_at = dateAndTime[0];
+      this.newEvent.hour = dateAndTime[1].substr(0, 8);
       return;
     },
     // Cerramos el modal
@@ -121,6 +126,7 @@ export default {
     },
     // Reinicio el objeto a sus valores iniciales
     resetModal() {
+      this.userEvent = ''
       return {
         id: "",
         title: "",
@@ -181,10 +187,21 @@ export default {
       return false;
     },
     // Acción a ejecutar trás el clic en un evento existente
-    setEvent(clickInfo) {
-      this.showModal = true;
-      this.isEdit = true;
-      this.loadModal(clickInfo);
+    async setEvent(clickInfo) {
+      let user = clickInfo.event.extendedProps.user_id;
+      if (this.$page.user.isAdmin) {
+        let req = await fetch(`/users/${user}/event`);
+        let dataJson = await req.json();
+        this.userEvent = dataJson[0].name;
+      }
+
+      if(this.$page.user.isAdmin || this.$page.user.id === user){
+        this.showModal = true;
+        this.isEdit = true;
+        this.loadModal(clickInfo);
+      }else{
+        alert('No puedes ejecutar esta acción')
+      }
     },
     // Cargamos los datos del calendario al modal
     loadModal(obj) {
@@ -219,9 +236,13 @@ export default {
         console.log(event.detail.error);
       });
     },
-    // Borramos la DB
-    deleteAppt(id) {
-      Inertia.delete(route("appointment.destroy", `${id}`), {
+    // Borramos el evento de la DB
+    deleteAppt(userId) {
+      let data  = {
+        _method: 'delete',
+        id: userId
+      }
+      Inertia.delete(route('appointment.destroy',userId), {
         preserveScroll: true,
         preserveState: true,
         onSuccess: page => {
@@ -242,5 +263,4 @@ export default {
 </script>
 
 <style>
-
 </style>

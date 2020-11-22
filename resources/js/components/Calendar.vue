@@ -36,6 +36,8 @@ export default {
         allDaySlot: false,
         expandRows: true,
         height: "100%",
+        firstDay: 1,
+        weekends : false,
         dateClick: this.handleDateClick,
         eventClick: this.handleEventClick
       }
@@ -45,7 +47,7 @@ export default {
     this.$data.calendarOptions.events = {
         url: route('appointment.index')
       }
-    if (this.$page.user.email === "d@d.es") {
+    if (this.$page.user.id === 1) {
       this.$data.calendarOptions.eventSources = [
         {
           url: "myEvents", // private events
@@ -56,13 +58,18 @@ export default {
           }
         }
       ];
+      return
     }
+    
   },
   mounted() {
     this.getCalendarApi();
     EventBus.$on('refresh',function(){
       this.refreshCalendar()
     }.bind(this))
+    if(this.$page.user.isAdmin){
+      this.$data.calendarOptions.weekends = true
+    }
   },  
   methods: {
     // Recupero los eventos de la DB

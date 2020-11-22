@@ -24,7 +24,7 @@
           <!-- Navigation Links -->
           <div 
           
-          v-if="$page.user.id === 1"
+          v-if="$page.user.name === 'admin'"
            class="hidden space-x-8 sm:-my-px sm:ml-10 sm:flex">
             <jet-nav-link
               :href="route('users.index')"
