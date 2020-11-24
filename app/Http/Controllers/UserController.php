@@ -26,7 +26,7 @@ class UserController extends Controller
             return Inertia::render('Admin/users', ['userList' => User::paginate()]);
         }
 
-        return Inertia::render('Agenda/Books');
+        return Redirect::route('events');
     }
 
     /**
