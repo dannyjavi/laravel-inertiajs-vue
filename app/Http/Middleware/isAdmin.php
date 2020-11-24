@@ -2,6 +2,7 @@
 
 namespace App\Http\Middleware;
 
+use App\Models\User;
 use App\Providers\RouteServiceProvider;
 use Closure;
 use Illuminate\Http\Request;
@@ -17,11 +18,8 @@ class isAdmin
      */
     public function handle(Request $request, Closure $next)
     {
-        if(session('isAdmin') === true){
+        if(session('isAdmin') == true){
             return $next($request);
-        }else{
-            session()->flush();
-            return redirect()->route('events');
         }
         return $next($request);
     }

@@ -1,7 +1,7 @@
 <?php
-  
+
 namespace App\Http\Controllers;
-  
+
 use Illuminate\Http\Request;
 use App\Http\Requests\StoreUserForm;
 use App\Models\Appointment;
@@ -10,7 +10,7 @@ use App\Models\User;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Redirect;
 use Illuminate\Support\Facades\Validator;
-  
+
 class UserController extends Controller
 {
     /**
@@ -20,13 +20,13 @@ class UserController extends Controller
      */
     public function index()
     {
-        $profile = Auth::user()->isAdmin;
+        $profile =  Auth::user()->isAdmin;
 
-        if($profile){
+        if ($profile) {
             return Inertia::render('Admin/users', ['userList' => User::paginate()]);
         }
-        return Inertia::render('Agenda/Books');
 
+        return Redirect::route('events');
     }
 
     /**
@@ -38,12 +38,12 @@ class UserController extends Controller
     public function view($id)
     {
         $find = User::query()->select('name')
-                ->where('id', $id)
-                ->get();
+            ->where('id', $id)
+            ->get();
 
         return response()->json($find);
     }
-    
+
     /**
      * Show the form for creating a new resource.
      *
@@ -53,44 +53,37 @@ class UserController extends Controller
     {
         User::create($request->all());
         return redirect()
-                ->back()
-                ->with('message', 'Paciente creado!!');
+            ->back()
+            ->with('message', 'Paciente creado!!');
     }
-  
+
     /**
      * Show the form for creating a new resource.
      *
      * @return Response
      */
     public function update(StoreUserForm $request)
-    {  
+    {
         if ($request->has('id')) {
             User::find($request->input('id'))->update($request->all());
 
             return redirect()
-                    ->back()
-                    ->with('message', 'Usuario modificado correctamente');
+                ->back()
+                ->with('message', 'Usuario modificado correctamente');
         }
     }
-  
+
     /**
-     * Show the form for creating a new resource.
+     * Remove the especific resource form storage.
      *
      * @return Response
      */
     public function destroy(User $user)
     {
-        try {
-            $find = User::findOrFail($user->id);
+        $user->delete();
 
-            $find->delete();
-            
-            return redirect()
-                ->back()
-                ->with('message', 'Paciente eliminado!!');
-        } catch (\Throwable $th) {
-            return redirect()->back()->with('message', 'No se puede borrar el usuario intentalo mas tarde');
-        }        
-        
+        return redirect()
+            ->back()
+            ->with('message', 'Paciente eliminado!!');
     }
 }

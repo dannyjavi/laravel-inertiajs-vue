@@ -55,9 +55,8 @@ class AttemptToAuthenticate
             $request->filled('remember'))
         ) {
             //if (Auth::user()->atributo de la tabla que queramos comparar
-            if(Auth::user()->email === 'admin@admin.es'){
-                session(['isAdmin'=> true]);
-
+            if(Auth::user()->isAdmin == true){
+                session(['isAdmin' => true]);
                 return redirect()->route('users.index');
             }else {
                 session(['isAdmin' => false]);

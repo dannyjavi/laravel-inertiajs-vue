@@ -68,6 +68,11 @@ export default {
       notResults: []
     };
   },
+  beforeCreate(){
+    if(this.$page.user.id === ''){
+      window.location('login')
+    }
+  },
   computed: {
     allUsers() {
       if (this.notResults.length === 1 && this.search.length === 0) {

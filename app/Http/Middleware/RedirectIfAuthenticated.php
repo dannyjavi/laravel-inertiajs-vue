@@ -6,6 +6,7 @@ use App\Providers\RouteServiceProvider;
 use Closure;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Redirect;
 
 class RedirectIfAuthenticated
 {
@@ -22,7 +23,11 @@ class RedirectIfAuthenticated
         $guards = empty($guards) ? [null] : $guards;
 
         foreach ($guards as $guard) {
+<<<<<<< HEAD
             if (!session(['isAdmin']) && Auth::guard($guard)->check()) {
+=======
+            if (Auth::guard($guard)->check()) {
+>>>>>>> development
                 return redirect(RouteServiceProvider::HOME);
             }
         }

@@ -6,7 +6,6 @@ use App\Http\Controllers\MyEventController;
 use App\Http\Controllers\SearchController;
 use App\Http\Controllers\UserController;
 use App\Http\Middleware\isAdmin;
-use App\Providers\RouteServiceProvider;
 
 Route::redirect('/', '/login');
 

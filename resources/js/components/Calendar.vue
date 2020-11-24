@@ -45,8 +45,8 @@ export default {
   },
   beforeMount() {
     this.$data.calendarOptions.events = {
-      url: route("appointment.index")
-    };
+        url: route('appointment.index')
+      }
     if (this.$page.user.isAdmin) {
       this.$data.calendarOptions.eventSources = [
         {
@@ -62,6 +62,7 @@ export default {
     }
   },
   mounted() {
+   
     this.getCalendarApi();
     EventBus.$on(
       "refresh",

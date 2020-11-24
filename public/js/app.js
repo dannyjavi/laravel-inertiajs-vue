@@ -20527,6 +20527,11 @@ __webpack_require__.r(__webpack_exports__);
 //
 //
 //
+//
+//
+//
+//
+//
 
 
 
@@ -21320,6 +21325,11 @@ function _asyncToGenerator(fn) { return function () { var self = this, args = ar
       },
       notResults: []
     };
+  },
+  beforeCreate: function beforeCreate() {
+    if (this.$page.user.id === '') {
+      window.location('login');
+    }
   },
   computed: {
     allUsers: function allUsers() {
@@ -22448,7 +22458,7 @@ __webpack_require__.r(__webpack_exports__);
   },
   beforeMount: function beforeMount() {
     this.$data.calendarOptions.events = {
-      url: route("appointment.index")
+      url: route('appointment.index')
     };
 
     if (this.$page.user.isAdmin) {
@@ -67020,6 +67030,17 @@ var render = function() {
                     [_vm._v("Calendar")]
                   ),
                   _vm._v(" "),
+                  _c(
+                    "jet-responsive-nav-link",
+                    {
+                      attrs: {
+                        href: _vm.route("profile.show"),
+                        active: _vm.$page.currentRouteName == "users.index"
+                      }
+                    },
+                    [_vm._v("Users")]
+                  ),
+                  _vm._v(" "),
                   _vm.$page.jetstream.hasApiFeatures
                     ? _c(
                         "jet-responsive-nav-link",
@@ -67964,7 +67985,7 @@ var render = function() {
                     }
                   }
                 },
-                [_vm._v("\n          Create New Post\n        ")]
+                [_vm._v("\n          Create New User\n        ")]
               ),
               _vm._v(" "),
               _c("table", { staticClass: "table-fixed w-full" }, [

@@ -235,6 +235,11 @@
             >
 
             <jet-responsive-nav-link
+              :href="route('profile.show')"
+              :active="$page.currentRouteName == 'users.index'"
+              >Users</jet-responsive-nav-link
+            >
+            <jet-responsive-nav-link
               :href="route('api-tokens.index')"
               :active="$page.currentRouteName == 'api-tokens.index'"
               v-if="$page.jetstream.hasApiFeatures"
