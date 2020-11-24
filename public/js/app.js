@@ -20517,6 +20517,16 @@ __webpack_require__.r(__webpack_exports__);
 //
 //
 //
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
 
 
 
@@ -22413,9 +22423,9 @@ __webpack_require__.r(__webpack_exports__);
       calendarOptions: {
         plugins: [_fullcalendar_daygrid__WEBPACK_IMPORTED_MODULE_2__["default"], _fullcalendar_interaction__WEBPACK_IMPORTED_MODULE_3__["default"], _fullcalendar_timegrid__WEBPACK_IMPORTED_MODULE_4__["default"], _fullcalendar_list__WEBPACK_IMPORTED_MODULE_5__["default"]],
         headerToolbar: {
-          left: "prev next today",
+          left: "prev,next,today",
           center: "title",
-          right: "dayGridMonth timeGridWeek timeGridDay"
+          right: "timeGridWeek,timeGridDay"
         },
         locale: "es",
         contentHeight: "auto",
@@ -22432,7 +22442,19 @@ __webpack_require__.r(__webpack_exports__);
         firstDay: 1,
         weekends: false,
         dateClick: this.handleDateClick,
-        eventClick: this.handleEventClick
+        eventClick: this.handleEventClick,
+        eventDidMount: function eventDidMount(info) {
+          if (info.event.extendedProps.status === 'done') {
+            // Change background color of row
+            info.el.style.backgroundColor = 'red'; // Change color of dot marker
+
+            var dotEl = info.el.getElementsByClassName('fc-event-dot')[0];
+
+            if (dotEl) {
+              dotEl.style.backgroundColor = 'white';
+            }
+          }
+        }
       }
     };
   },
@@ -66988,6 +67010,28 @@ var render = function() {
                     [_vm._v("Profile")]
                   ),
                   _vm._v(" "),
+                  _c(
+                    "jet-responsive-nav-link",
+                    {
+                      attrs: {
+                        href: _vm.route("users.index"),
+                        active: _vm.$page.currentRouteName == "users.index"
+                      }
+                    },
+                    [_vm._v("Users")]
+                  ),
+                  _vm._v(" "),
+                  _c(
+                    "jet-responsive-nav-link",
+                    {
+                      attrs: {
+                        href: _vm.route("events"),
+                        active: _vm.$page.currentRouteName == "events.index"
+                      }
+                    },
+                    [_vm._v("Calendar")]
+                  ),
+                  _vm._v(" "),
                   _vm.$page.jetstream.hasApiFeatures
                     ? _c(
                         "jet-responsive-nav-link",
@@ -85247,8 +85291,8 @@ __webpack_require__.r(__webpack_exports__);
 /*! no static exports found */
 /***/ (function(module, exports, __webpack_require__) {
 
-__webpack_require__(/*! /home/danny/laravel-inertiajs-vue/resources/js/app.js */"./resources/js/app.js");
-module.exports = __webpack_require__(/*! /home/danny/laravel-inertiajs-vue/resources/css/app.css */"./resources/css/app.css");
+__webpack_require__(/*! /var/www/marianarvaez/citas/resources/js/app.js */"./resources/js/app.js");
+module.exports = __webpack_require__(/*! /var/www/marianarvaez/citas/resources/css/app.css */"./resources/css/app.css");
 
 
 /***/ })

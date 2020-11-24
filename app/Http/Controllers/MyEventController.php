@@ -28,6 +28,6 @@ class MyEventController extends Controller
             $memories = MyEvent::get(['title','start','end']);
             return response()->json($memories);
         }
-        return response()->json([], 403);
+        return response()->json(['No tienes acceso a ésta zona'], 403);
     }
 }

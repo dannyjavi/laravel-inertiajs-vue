@@ -24,7 +24,7 @@
           <!-- Navigation Links -->
           <div 
           
-          v-if="$page.user.name === 'admin'"
+          v-if="$page.user.isAdmin === true"
            class="hidden space-x-8 sm:-my-px sm:ml-10 sm:flex">
             <jet-nav-link
               :href="route('users.index')"
@@ -222,6 +222,16 @@
               :href="route('profile.show')"
               :active="$page.currentRouteName == 'profile.show'"
               >Profile</jet-responsive-nav-link
+            >
+            <jet-responsive-nav-link
+              :href="route('users.index')"
+              :active="$page.currentRouteName == 'users.index'"
+              >Users</jet-responsive-nav-link
+            >
+            <jet-responsive-nav-link
+              :href="route('events')"
+              :active="$page.currentRouteName == 'events.index'"
+              >Calendar</jet-responsive-nav-link
             >
 
             <jet-responsive-nav-link

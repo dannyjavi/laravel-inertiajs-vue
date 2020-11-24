@@ -23,9 +23,9 @@ export default {
       calendarOptions: {
         plugins: [Daygrid, Interaction, TimeGrid, TimeList],
         headerToolbar: {
-          left: "prev next today",
+          left: "prev,next,today",
           center: "title",
-          right: "dayGridMonth timeGridWeek timeGridDay"
+          right: "timeGridWeek,timeGridDay,listWeek"
         },
         locale: "es",
         contentHeight: "auto", // for scrolling
@@ -39,7 +39,21 @@ export default {
         firstDay: 1,
         weekends : false,
         dateClick: this.handleDateClick,
-        eventClick: this.handleEventClick
+        eventClick: this.handleEventClick,
+        eventDidMount: function(info) {
+          console.log(info.event.extendedProps.status);
+    if (info.event.extendedProps.status === 'pending') {
+
+      // Change background color of row
+      info.el.style.backgroundColor = 'red';
+
+      // Change color of dot marker
+      var dotEl = info.el.getElementsByClassName('fc-event-dot')[0];
+      if (dotEl) {
+        dotEl.style.backgroundColor = 'white';
+      }
+    }
+  }
       }
     };
   },
@@ -47,7 +61,7 @@ export default {
     this.$data.calendarOptions.events = {
         url: route('appointment.index')
       }
-    if (this.$page.user.id === 1) {
+    if (this.$page.user.isAdmin === true) {
       this.$data.calendarOptions.eventSources = [
         {
           url: "myEvents", // private events
