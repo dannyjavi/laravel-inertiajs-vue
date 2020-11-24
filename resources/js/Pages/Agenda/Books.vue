@@ -81,7 +81,7 @@ export default {
   },
   methods: {
     searchUserDB(user) {
-      Inertia.replace(route("events", { q: user }), {
+      Inertia.replace(route("events",{ q: user }), {
         preserveScroll: true,
         preserveState: true,
         replace: true,

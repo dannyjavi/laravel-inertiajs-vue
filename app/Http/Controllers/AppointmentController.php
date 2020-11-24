@@ -20,7 +20,7 @@ class AppointmentController extends Controller
     {
         $this->apt = $appointment;
     }
-    
+
     /**
      * Display a listing of the resource.
      *
@@ -28,7 +28,9 @@ class AppointmentController extends Controller
      */
     public function index()
     {
-        $events = $this->apt::select('id', 'title', 'start', 'end', 'status', 'session', 'color', 'user_id')->orderBy('end', 'asc')->get();
+        $events = $this->apt::select('id', 'title', 'start', 'end', 'status', 'session', 'color', 'user_id')
+            ->orderBy('end', 'asc')
+            ->get();
 
         return response()->json($events);
     }

@@ -22442,35 +22442,23 @@ __webpack_require__.r(__webpack_exports__);
         firstDay: 1,
         weekends: false,
         dateClick: this.handleDateClick,
-        eventClick: this.handleEventClick,
-        eventDidMount: function eventDidMount(info) {
-          if (info.event.extendedProps.status === 'done') {
-            // Change background color of row
-            info.el.style.backgroundColor = 'red'; // Change color of dot marker
-
-            var dotEl = info.el.getElementsByClassName('fc-event-dot')[0];
-
-            if (dotEl) {
-              dotEl.style.backgroundColor = 'white';
-            }
-          }
-        }
+        eventClick: this.handleEventClick
       }
     };
   },
   beforeMount: function beforeMount() {
     this.$data.calendarOptions.events = {
-      url: route('appointment.index')
+      url: route("appointment.index")
     };
 
-    if (this.$page.user.id === 1) {
+    if (this.$page.user.isAdmin) {
       this.$data.calendarOptions.eventSources = [{
         url: "myEvents",
         // private events
         color: "#1ABC9C",
         failure: function failure(error) {
           // Si sucede algo inesperado lo mostramos por consola
-          console.log('mostrando errores: ', error.message);
+          console.log("mostrando errores: ", error.message);
         }
       }];
       return;
@@ -22478,7 +22466,7 @@ __webpack_require__.r(__webpack_exports__);
   },
   mounted: function mounted() {
     this.getCalendarApi();
-    _bus_event_bus__WEBPACK_IMPORTED_MODULE_0__["default"].$on('refresh', function () {
+    _bus_event_bus__WEBPACK_IMPORTED_MODULE_0__["default"].$on("refresh", function () {
       this.refreshCalendar();
     }.bind(this));
 
@@ -22493,7 +22481,7 @@ __webpack_require__.r(__webpack_exports__);
     },
     // Función para el evento clic dentro del calendario
     handleDateClick: function handleDateClick(arg) {
-      this.$emit('openModal', arg);
+      this.$emit("openModal", arg);
     },
     // Cierro el modal
     closeWindow: function closeWindow() {
@@ -22506,7 +22494,7 @@ __webpack_require__.r(__webpack_exports__);
     },
     // Acción del click sobre un evento
     handleEventClick: function handleEventClick(clickInfo) {
-      this.$emit('handleEventClick', clickInfo);
+      this.$emit("handleEventClick", clickInfo);
     }
   }
 });
@@ -66588,7 +66576,7 @@ var render = function() {
               )
             ]),
             _vm._v(" "),
-            _vm.$page.user.name === "admin"
+            _vm.$page.user.isAdmin
               ? _c(
                   "div",
                   {
@@ -67026,7 +67014,7 @@ var render = function() {
                     {
                       attrs: {
                         href: _vm.route("events"),
-                        active: _vm.$page.currentRouteName == "events.index"
+                        active: _vm.$page.currentRouteName == "events"
                       }
                     },
                     [_vm._v("Calendar")]
@@ -85291,8 +85279,8 @@ __webpack_require__.r(__webpack_exports__);
 /*! no static exports found */
 /***/ (function(module, exports, __webpack_require__) {
 
-__webpack_require__(/*! /var/www/marianarvaez/citas/resources/js/app.js */"./resources/js/app.js");
-module.exports = __webpack_require__(/*! /var/www/marianarvaez/citas/resources/css/app.css */"./resources/css/app.css");
+__webpack_require__(/*! /home/danny/laravel-inertiajs-vue/resources/js/app.js */"./resources/js/app.js");
+module.exports = __webpack_require__(/*! /home/danny/laravel-inertiajs-vue/resources/css/app.css */"./resources/css/app.css");
 
 
 /***/ })

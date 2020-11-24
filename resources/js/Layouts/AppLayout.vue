@@ -24,7 +24,7 @@
           <!-- Navigation Links -->
           <div 
           
-          v-if="$page.user.isAdmin === true"
+          v-if="$page.user.isAdmin"
            class="hidden space-x-8 sm:-my-px sm:ml-10 sm:flex">
             <jet-nav-link
               :href="route('users.index')"
@@ -230,7 +230,7 @@
             >
             <jet-responsive-nav-link
               :href="route('events')"
-              :active="$page.currentRouteName == 'events.index'"
+              :active="$page.currentRouteName == 'events'"
               >Calendar</jet-responsive-nav-link
             >
 
