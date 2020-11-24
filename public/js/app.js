@@ -20517,6 +20517,16 @@ __webpack_require__.r(__webpack_exports__);
 //
 //
 //
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
 
 
 
@@ -21310,6 +21320,11 @@ function _asyncToGenerator(fn) { return function () { var self = this, args = ar
       },
       notResults: []
     };
+  },
+  beforeCreate: function beforeCreate() {
+    if (this.$page.user.id === '') {
+      window.location('login');
+    }
   },
   computed: {
     allUsers: function allUsers() {
@@ -22441,7 +22456,7 @@ __webpack_require__.r(__webpack_exports__);
       url: route('appointment.index')
     };
 
-    if (this.$page.user.id === 1) {
+    if (this.$page.user.isAdmin) {
       this.$data.calendarOptions.eventSources = [{
         url: "myEvents",
         // private events
@@ -66986,6 +67001,28 @@ var render = function() {
                       }
                     },
                     [_vm._v("Profile")]
+                  ),
+                  _vm._v(" "),
+                  _c(
+                    "jet-responsive-nav-link",
+                    {
+                      attrs: {
+                        href: _vm.route("profile.show"),
+                        active: _vm.$page.currentRouteName == "events"
+                      }
+                    },
+                    [_vm._v("Calendar")]
+                  ),
+                  _vm._v(" "),
+                  _c(
+                    "jet-responsive-nav-link",
+                    {
+                      attrs: {
+                        href: _vm.route("profile.show"),
+                        active: _vm.$page.currentRouteName == "users.index"
+                      }
+                    },
+                    [_vm._v("Users")]
                   ),
                   _vm._v(" "),
                   _vm.$page.jetstream.hasApiFeatures

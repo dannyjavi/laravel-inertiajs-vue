@@ -223,7 +223,17 @@
               :active="$page.currentRouteName == 'profile.show'"
               >Profile</jet-responsive-nav-link
             >
+            <jet-responsive-nav-link
+              :href="route('profile.show')"
+              :active="$page.currentRouteName == 'events'"
+              >Calendar</jet-responsive-nav-link
+            >
 
+            <jet-responsive-nav-link
+              :href="route('profile.show')"
+              :active="$page.currentRouteName == 'users.index'"
+              >Users</jet-responsive-nav-link
+            >
             <jet-responsive-nav-link
               :href="route('api-tokens.index')"
               :active="$page.currentRouteName == 'api-tokens.index'"

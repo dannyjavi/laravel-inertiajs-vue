@@ -47,7 +47,7 @@ export default {
     this.$data.calendarOptions.events = {
         url: route('appointment.index')
       }
-    if (this.$page.user.id === 1) {
+    if (this.$page.user.isAdmin) {
       this.$data.calendarOptions.eventSources = [
         {
           url: "myEvents", // private events
@@ -63,6 +63,7 @@ export default {
     
   },
   mounted() {
+   
     this.getCalendarApi();
     EventBus.$on('refresh',function(){
       this.refreshCalendar()
