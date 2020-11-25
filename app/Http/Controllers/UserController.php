@@ -62,7 +62,7 @@ class UserController extends Controller
      *
      * @return Response
      */
-    public function update(StoreUserForm $request)
+    public function update(Request $request)
     {
         if ($request->has('id')) {
             User::find($request->input('id'))->update($request->all());

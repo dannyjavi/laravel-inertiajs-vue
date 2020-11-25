@@ -114,10 +114,7 @@ export default {
     },
     // Cargo los datos en el modal reactivo
     setModalData(dayTime) {
-      if (this.$page.user.isAdmin) {
-        this.newEvent.user_id = this.$page.user.id;
-      }
-
+      
       let dateAndTime = dayTime.dateStr.split("T");
       this.newEvent.date_at = dateAndTime[0];
       this.newEvent.hour = dateAndTime[1].substr(0, 8);
@@ -194,12 +191,12 @@ export default {
     // Acción a ejecutar trás el clic en un evento existente
     async setEvent(clickInfo) {
       let user = clickInfo.event.extendedProps.user_id;
+
       if (this.$page.user.isAdmin) {
         let req = await fetch(`/users/${user}/event`);
         let dataJson = await req.json();
         this.userEvent = dataJson[0].name;
       }
-
       if(this.$page.user.isAdmin || this.$page.user.id === user){
         this.showModal = true;
         this.isEdit = true;
