@@ -21092,36 +21092,6 @@ __webpack_require__.r(__webpack_exports__);
 //
 //
 //
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
 
 
 
@@ -21215,7 +21185,7 @@ __webpack_require__.r(__webpack_exports__);
         }
       });
       _inertiajs_inertia__WEBPACK_IMPORTED_MODULE_2__["Inertia"].on("error", function (event) {
-        console.log('Corregir: ', event.detail.error);
+        console.log("Corregir: ", event.detail.error);
       });
       this.reset();
       this.closeModal();
@@ -21375,10 +21345,6 @@ function _asyncToGenerator(fn) { return function () { var self = this, args = ar
     },
     // Cargo los datos en el modal reactivo
     setModalData: function setModalData(dayTime) {
-      if (this.$page.user.isAdmin) {
-        this.newEvent.user_id = this.$page.user.id;
-      }
-
       var dateAndTime = dayTime.dateStr.split("T");
       this.newEvent.date_at = dateAndTime[0];
       this.newEvent.hour = dateAndTime[1].substr(0, 8);
@@ -22756,7 +22722,13 @@ __webpack_require__.r(__webpack_exports__);
     selectedUser: function selectedUser(user) {
       this.term = user.name;
       this.searching = false;
-      this.form.user_id = user.id;
+
+      if (this.$page.user.isAdmin) {
+        this.form.user_id = user.id;
+        return;
+      } else {
+        this.form.user_id = this.$page.user.id;
+      }
     },
     searchUser: function searchUser() {
       if (this.term !== "") {
@@ -67935,7 +67907,7 @@ var render = function() {
                   staticClass:
                     "font-semibold text-xl text-gray-800 leading-tight"
                 },
-                [_vm._v("\n      Manage Users\n    ")]
+                [_vm._v("Manage Users")]
               )
             ]
           },
@@ -67985,7 +67957,7 @@ var render = function() {
                     }
                   }
                 },
-                [_vm._v("\n          Create New User\n        ")]
+                [_vm._v("Create New User")]
               ),
               _vm._v(" "),
               _c("table", { staticClass: "table-fixed w-full" }, [
@@ -68031,7 +68003,7 @@ var render = function() {
                               }
                             }
                           },
-                          [_vm._v("\n                  Edit\n                ")]
+                          [_vm._v("Edit")]
                         ),
                         _vm._v(" "),
                         _c(
@@ -68045,11 +68017,7 @@ var render = function() {
                               }
                             }
                           },
-                          [
-                            _vm._v(
-                              "\n                  Delete\n                "
-                            )
-                          ]
+                          [_vm._v("Delete")]
                         )
                       ])
                     ])
@@ -68177,7 +68145,8 @@ var render = function() {
                                             attrs: {
                                               type: "text",
                                               id: "exampleFormControlInput1",
-                                              placeholder: "Ingresa el nombre"
+                                              placeholder: "Ingresa el nombre",
+                                              autocomplete: "off"
                                             },
                                             domProps: { value: _vm.form.name },
                                             on: {
@@ -68200,11 +68169,9 @@ var render = function() {
                                                 { staticClass: "text-red-500" },
                                                 [
                                                   _vm._v(
-                                                    "\n                          " +
-                                                      _vm._s(
-                                                        _vm.$page.errors.name[0]
-                                                      ) +
-                                                      "\n                        "
+                                                    _vm._s(
+                                                      _vm.$page.errors.name[0]
+                                                    )
                                                   )
                                                 ]
                                               )
@@ -68238,7 +68205,8 @@ var render = function() {
                                             attrs: {
                                               type: "text",
                                               id: "exampleFormControlInput1",
-                                              placeholder: "Enter pass"
+                                              placeholder: "Enter pass",
+                                              autocomplete: "off"
                                             },
                                             domProps: {
                                               value: _vm.form.password
@@ -68263,12 +68231,10 @@ var render = function() {
                                                 { staticClass: "text-red-500" },
                                                 [
                                                   _vm._v(
-                                                    "\n                          " +
-                                                      _vm._s(
-                                                        _vm.$page.errors
-                                                          .password[0]
-                                                      ) +
-                                                      "\n                        "
+                                                    _vm._s(
+                                                      _vm.$page.errors
+                                                        .password[0]
+                                                    )
                                                   )
                                                 ]
                                               )
@@ -68301,7 +68267,8 @@ var render = function() {
                                               "shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline",
                                             attrs: {
                                               id: "exampleFormControlInput2",
-                                              placeholder: "Correo electrónico"
+                                              placeholder: "Correo electrónico",
+                                              autocomplete: "off"
                                             },
                                             domProps: { value: _vm.form.email },
                                             on: {
@@ -68324,12 +68291,9 @@ var render = function() {
                                                 { staticClass: "text-red-500" },
                                                 [
                                                   _vm._v(
-                                                    "\n                          " +
-                                                      _vm._s(
-                                                        _vm.$page.errors
-                                                          .email[0]
-                                                      ) +
-                                                      "\n                        "
+                                                    _vm._s(
+                                                      _vm.$page.errors.email[0]
+                                                    )
                                                   )
                                                 ]
                                               )
@@ -68370,11 +68334,7 @@ var render = function() {
                                                     }
                                                   }
                                                 },
-                                                [
-                                                  _vm._v(
-                                                    "\n                        Save\n                      "
-                                                  )
-                                                ]
+                                                [_vm._v("Save")]
                                               )
                                             : _vm._e()
                                         ]
@@ -68410,11 +68370,7 @@ var render = function() {
                                                 }
                                               }
                                             },
-                                            [
-                                              _vm._v(
-                                                "\n                        Update\n                      "
-                                              )
-                                            ]
+                                            [_vm._v("Update")]
                                           )
                                         ]
                                       ),
@@ -68438,11 +68394,7 @@ var render = function() {
                                                 }
                                               }
                                             },
-                                            [
-                                              _vm._v(
-                                                "\n                        Cancel\n                      "
-                                              )
-                                            ]
+                                            [_vm._v("Cancel")]
                                           )
                                         ]
                                       )
@@ -69950,7 +69902,7 @@ var render = function() {
                                   "block text-gray-700 text-sm font-bold mb-2",
                                 attrs: { for: "exampleFormControlInput1" }
                               },
-                              [_vm._v("Buscar Paciente")]
+                              [_vm._v("Buscar Usuario")]
                             ),
                             _vm._v(" "),
                             _c(
@@ -69981,7 +69933,7 @@ var render = function() {
                                         staticClass:
                                           "p-1 px-2 appearance-none outline-none w-full text-gray-800",
                                         attrs: {
-                                          placeholder: "Buscar paciente"
+                                          placeholder: "Buscar Usuario"
                                         },
                                         domProps: { value: _vm.term },
                                         on: {

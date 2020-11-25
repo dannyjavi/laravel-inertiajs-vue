@@ -58,7 +58,7 @@ class AppointmentController extends Controller
             'end' => $request->end,
             'session' => $request->session,
             'price' => $request->price,
-            'user_id' => Auth::id()
+            'user_id' => $request->user_id
         ]);
 
         return redirect()->back()->with('message', 'Cita creada con éxito');

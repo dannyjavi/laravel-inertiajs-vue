@@ -34,7 +34,7 @@
                 <label
                   for="exampleFormControlInput1"
                   class="block text-gray-700 text-sm font-bold mb-2"
-                >Buscar Paciente</label>
+                >Buscar Usuario</label>
                 <!-- Buscador way -->
                 <div class="flex flex-col relative">
                   <div class="w-full">
@@ -43,7 +43,7 @@
                       <input
                         v-model="term"
                         @keyup="searchUser"
-                        placeholder="Buscar paciente"
+                        placeholder="Buscar Usuario"
                         class="p-1 px-2 appearance-none outline-none w-full text-gray-800"
                       />
                       <div
@@ -232,7 +232,12 @@ export default {
     selectedUser(user) {
       this.term = user.name;
       this.searching = false;
-      this.form.user_id = user.id;
+      if(this.$page.user.isAdmin){
+        this.form.user_id = user.id;
+        return
+      }else{
+        this.form.user_id = this.$page.user.id
+      }
     },
     searchUser() {
       if (this.term !== "") {

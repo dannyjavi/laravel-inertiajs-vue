@@ -24,10 +24,10 @@ class CreateNewUser implements CreatesNewUsers
             'email' => ['required', 'string', 'email', 'max:50', 'unique:users'],
             'password' => $this->passwordRules(),
         ])->validate();
-        
+
         $admin = false;
-        if($input['name'] == 'admin'){
-            $admin=true;
+        if ($input['name'] == 'admin') {
+            $admin = true;
         }
 
         return User::create([
